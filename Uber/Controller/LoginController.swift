@@ -68,6 +68,20 @@ class LoginController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureUI()
+        configureNavigationBar()
+    }
+    
+    //MARK: Selectors
+    
+    @objc func handleShowSighUp() {
+        let controller = SignUpViewController()
+        navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    //MARK: Helper functions
+    
+    func configureUI() {
         view.backgroundColor = .backGroundColor
         
         view.addSubview(titleLabel)
@@ -85,15 +99,11 @@ class LoginController: UIViewController {
         view.addSubview(dontHaveAccountButton)
         dontHaveAccountButton.centerX(inView: view)
         dontHaveAccountButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, height: 32)
-        
     }
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+    func configureNavigationBar() {
+        navigationController?.navigationBar.isHidden = true
+        navigationController?.navigationBar.barStyle = .black
+       
     }
-    
-    @objc func handleShowSighUp() {
-        print(123)
-    }
-    
 }
