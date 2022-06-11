@@ -21,7 +21,8 @@ extension UIColor {
 
 extension UIView {
     
-    func inputContainerView(image: UIImage?, textField: UITextField) -> UIView {
+    func inputContainerView(image: UIImage?, textField: UITextField? = nil,
+                            segmentedController: UISegmentedControl? = nil) -> UIView {
         let view = UIView()
         
         let imageView = UIImageView()
@@ -29,13 +30,24 @@ extension UIView {
         imageView.alpha = 0.87
         imageView.tintColor = .white
         view.addSubview(imageView)
-        imageView.centerY(inView: view)
-        imageView.anchor(left: view.leftAnchor, paddingLeft: 8, width: 24, height: 24)
         
-        view.addSubview(textField)
-        textField.centerY(inView: view)
-        textField.anchor(left: imageView.rightAnchor, bottom: view.bottomAnchor,
-                              right: view.rightAnchor, paddingLeft: 8, paddingBottom: 8)
+        if let textField = textField {
+            view.addSubview(textField)
+            
+            imageView.centerY(inView: view)
+            imageView.anchor(left: view.leftAnchor, paddingLeft: 8, width: 24, height: 24)
+            
+            textField.centerY(inView: view)
+            textField.anchor(left: imageView.rightAnchor, bottom: view.bottomAnchor,
+                                  right: view.rightAnchor, paddingLeft: 8, paddingBottom: 8)
+        }
+        
+        if let segmentedController = segmentedController {
+            imageView.anchor(top: view.topAnchor, left: view.leftAnchor, paddingLeft: 8, width: 24, height: 24)
+            view.addSubview(segmentedController)
+            segmentedController.anchor(left: view.leftAnchor, right: view.rightAnchor, paddingLeft: 8, paddinRight: 8)
+            segmentedController.centerY(inView: view, constant: 8)
+        }
         
         let separatorView = UIView()
         separatorView.backgroundColor = .lightGray
@@ -84,12 +96,12 @@ extension UIView {
         
     }
     
-    func centerX(inView view: UIView) {
-        centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+    func centerX(inView view: UIView, constant: CGFloat = 0) {
+        centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: constant).isActive = true
     }
     
-    func centerY(inView view: UIView) {
-        centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+    func centerY(inView view: UIView, constant: CGFloat = 0) {
+        centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constant).isActive = true
     }
 }
 

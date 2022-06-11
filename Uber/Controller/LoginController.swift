@@ -40,14 +40,9 @@ class LoginController: UIViewController {
                                        isSecureTextEntry: true)
     }()
     
-    private let logginButton: UIButton = {
-        let button = UIButton()
+    private let logginButton: AuthButton = {
+        let button = AuthButton()
         button.setTitle("Log In", for: .normal)
-        button.setTitleColor(UIColor(white: 1, alpha: 0.5), for: .normal)
-        button.backgroundColor = .mainBlueTint
-        button.layer.cornerRadius = 5
-        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         return button
     }()
     

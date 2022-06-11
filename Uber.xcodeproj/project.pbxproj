@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		180C1B8B28528D590018D0DA /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180C1B8A28528D590018D0DA /* SignUpViewController.swift */; };
+		180C1B8D28545C7F0018D0DA /* AuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180C1B8C28545C7F0018D0DA /* AuthButton.swift */; };
 		186E00552839254F006E86E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186E00542839254F006E86E9 /* AppDelegate.swift */; };
 		186E00572839254F006E86E9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186E00562839254F006E86E9 /* SceneDelegate.swift */; };
 		186E005E28392555006E86E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 186E005D28392555006E86E9 /* Assets.xcassets */; };
@@ -18,6 +19,7 @@
 
 /* Begin PBXFileReference section */
 		180C1B8A28528D590018D0DA /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		180C1B8C28545C7F0018D0DA /* AuthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthButton.swift; sourceTree = "<group>"; };
 		186E00512839254F006E86E9 /* Uber.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Uber.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		186E00542839254F006E86E9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		186E00562839254F006E86E9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 		186E006E283925AF006E86E9 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				180C1B8C28545C7F0018D0DA /* AuthButton.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -180,6 +183,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				186E007328392F42006E86E9 /* Extensions.swift in Sources */,
+				180C1B8D28545C7F0018D0DA /* AuthButton.swift in Sources */,
 				186E00552839254F006E86E9 /* AppDelegate.swift in Sources */,
 				186E00712839269D006E86E9 /* LoginController.swift in Sources */,
 				186E00572839254F006E86E9 /* SceneDelegate.swift in Sources */,
