@@ -8,9 +8,15 @@
 import UIKit
 import Firebase
 
+protocol SignUpViewControllerDelegate: AnyObject {
+    func didComplete(_ signUpViewController: SignUpViewController)
+}
+
 class SignUpViewController: UIViewController {
     
     //MARK: Properties
+    
+    weak var delegate: SignUpViewControllerDelegate?
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -115,11 +121,12 @@ class SignUpViewController: UIViewController {
                           "fullname": fullName,
                           "accountType": accountTypeIndex] as [String:Any]
             Database.database().reference().child("users").child(uid).updateChildValues(values) { error, ref in
-                guard let error = error else {
-                    print("DEBUG: Successfuly save data..")
-                    return
+                if let error = error {
+                    print("DEBUG: Failed to save user data with error: \(error.localizedDescription)")
                 }
-                print("DEBUG: Failed to save user data with error: \(error.localizedDescription)")
+                print("DEBUG: Successfuly save data..")
+                self.delegate?.didComplete(self)
+                self.dismiss(animated: true)
             }
         }
     }

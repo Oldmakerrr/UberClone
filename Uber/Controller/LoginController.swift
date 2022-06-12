@@ -8,9 +8,15 @@
 import UIKit
 import Firebase
 
+protocol LoginControllerDelegate: AnyObject {
+    func didComplete(_ loginController: LoginController)
+}
+
 class LoginController: UIViewController {
-    
+
     //MARK: - Properties
+    
+    weak var delegate: LoginControllerDelegate?
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -73,6 +79,7 @@ class LoginController: UIViewController {
     
     @objc func handleShowSighUp() {
         let controller = SignUpViewController()
+        controller.delegate = delegate as? SignUpViewControllerDelegate
         navigationController?.pushViewController(controller, animated: true)
     }
     
@@ -86,6 +93,8 @@ class LoginController: UIViewController {
                 return
             }
             print("DEBUG: Succesfully logged user in..")
+            self.delegate?.didComplete(self)
+            self.dismiss(animated: true)
         }
     }
     

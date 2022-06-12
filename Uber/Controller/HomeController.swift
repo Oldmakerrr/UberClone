@@ -7,34 +7,35 @@
 
 import UIKit
 import Firebase
+import MapKit
 
 class HomeController: UIViewController {
     
     //MARK: - Properties
     
-    //MARK: - Lifecycle
+    private let mapView = MKMapView()
     
+    //MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         checkIfUserIsLoggedIn()
-        view.backgroundColor = .cyan
+        //signOut()
     }
     
-    //MARK: -  API
+    //MARK: - API
     
-    func checkIfUserIsLoggedIn() {
+    private func checkIfUserIsLoggedIn() {
         if let uid = Auth.auth().currentUser?.uid {
             print("DEBUG: user id is \(uid)")
+            configureUI()
         } else {
-            let navigationController = UINavigationController(rootViewController: LoginController())
-            present(navigationController, animated: true)
+            goToLoginController()
             print("DEBUG: user is not logged on")
         }
     }
     
-    func signOut() {
+    private func signOut() {
         do {
             try Auth.auth().signOut()
             print("DEBUG: Succesfully sign out")
@@ -42,4 +43,31 @@ class HomeController: UIViewController {
             print("DEBUG: Erorr signing out \(error.localizedDescription)")
         }
     }
+    
+    //MARK: - Helper function
+    
+    private func goToLoginController() {
+        let loginController = LoginController()
+        loginController.delegate = self
+        let navigationController = UINavigationController(rootViewController: loginController)
+        present(navigationController, animated: true)
+    }
+    
+    private func configureUI() {
+        view.addSubview(mapView)
+        mapView.frame = view.frame
+    }
 }
+
+extension HomeController: LoginControllerDelegate, SignUpViewControllerDelegate {
+    
+    func didComplete(_ loginController: LoginController) {
+        configureUI()
+    }
+    
+    func didComplete(_ signUpViewController: SignUpViewController) {
+        configureUI()
+    }
+}
+
+

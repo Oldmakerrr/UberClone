@@ -104,8 +104,8 @@
 		186E006D283925AE006E86E9 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				186E00702839269D006E86E9 /* LoginController.swift */,
 				18C975612855FF97001A6848 /* HomeController.swift */,
+				186E00702839269D006E86E9 /* LoginController.swift */,
 				180C1B8A28528D590018D0DA /* SignUpViewController.swift */,
 			);
 			path = Controller;
