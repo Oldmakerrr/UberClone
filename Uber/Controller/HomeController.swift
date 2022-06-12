@@ -61,9 +61,15 @@ class HomeController: UIViewController {
     private func configureUI() {
         configureMapUI()
         view.addSubview(locationInputActivationView)
+        locationInputActivationView.delegate = self
         locationInputActivationView.centerX(inView: view)
         locationInputActivationView.setDimensions(height: 50, width: view.frame.width - 64)
         locationInputActivationView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: view.frame.height/40)
+        
+        locationInputActivationView.alpha = 0
+        UIView.animate(withDuration: 2) {
+            self.locationInputActivationView.alpha = 1
+        }
     }
     
     private func configureMapUI() {
@@ -86,6 +92,14 @@ extension HomeController: LoginControllerDelegate, SignUpViewControllerDelegate 
     func didComplete(_ signUpViewController: SignUpViewController) {
         configureUI()
     }
+}
+
+extension HomeController: LocationInputActivationViewDelegate {
+    
+    func presentLocationInputView(_ locationInputActivationView: LocationInputActivationView) {
+        print("work delegate")
+    }
+    
 }
 
 //MARK: - LocationServices
