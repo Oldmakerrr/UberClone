@@ -57,10 +57,20 @@ class HomeController: UIViewController {
     }
     
     private func configureUI() {
+        configureMapUI()
+        
+    }
+    
+    private func configureMapUI() {
         view.addSubview(mapView)
         mapView.frame = view.frame
+        
+        mapView.showsUserLocation = true
+        mapView.userTrackingMode = .follow
     }
 }
+
+//MARK: - AccountControllersDelegates
 
 extension HomeController: LoginControllerDelegate, SignUpViewControllerDelegate {
     
