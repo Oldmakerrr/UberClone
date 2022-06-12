@@ -18,6 +18,7 @@ class HomeController: UIViewController {
     private let mapView = MKMapView()
     
     private let locationInputActivationView = LocationInputActivationView()
+    private let locationInputView = LocationInputView()
     
     //MARK: - Lifecycle
     
@@ -35,8 +36,11 @@ class HomeController: UIViewController {
             print("DEBUG: user id is \(uid)")
             configureUI()
         } else {
-            goToLoginController()
-            print("DEBUG: user is not logged on")
+            DispatchQueue.main.async {
+                self.goToLoginController()
+                print("DEBUG: user is not logged on")
+            }
+            
         }
     }
     
@@ -79,6 +83,19 @@ class HomeController: UIViewController {
         mapView.showsUserLocation = true
         mapView.userTrackingMode = .follow
     }
+    
+    private func configureLocationInputView() {
+        view.addSubview(locationInputView)
+        locationInputView.delegate = self
+        locationInputView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: UIScreen.main.bounds.height*0.3)
+        locationInputView.alpha = 0
+        UIView.animate(withDuration: 0.5) {
+            self.locationInputView.alpha = 1
+        } completion: { _ in
+            print("DEBUG: present table view..")
+        }
+
+    }
 }
 
 //MARK: - AccountControllersDelegates
@@ -97,8 +114,26 @@ extension HomeController: LoginControllerDelegate, SignUpViewControllerDelegate 
 extension HomeController: LocationInputActivationViewDelegate {
     
     func presentLocationInputView(_ locationInputActivationView: LocationInputActivationView) {
-        print("work delegate")
+        configureLocationInputView()
+        self.locationInputActivationView.alpha = 0
     }
+    
+}
+
+extension HomeController: LocationInputViewDelegate {
+    
+    func didComplete(_ locationInputView: LocationInputView) {
+        print("DEBUG: tapped back button..")
+        UIView.animate(withDuration: 0.3) {
+            self.locationInputView.alpha = 0
+        } completion: { _ in
+            UIView.animate(withDuration: 0.3) {
+                self.locationInputActivationView.alpha = 1
+            }
+        }
+
+    }
+    
     
 }
 

@@ -153,3 +153,13 @@ extension UITextField {
         return textField
     }
 }
+
+extension CALayer {
+    
+    func applyShadow() {
+        shadowColor = UIColor.black.cgColor
+        shadowOpacity = 0.55
+        shadowOffset = CGSize(width: 0.5, height: 0.5)
+        masksToBounds = false
+    }
+}
