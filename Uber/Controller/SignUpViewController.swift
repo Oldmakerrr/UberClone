@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 class SignUpViewController: UIViewController {
     
@@ -53,8 +54,7 @@ class SignUpViewController: UIViewController {
     }()
     
     private let fullNameTextField: UITextField = {
-        return UITextField().textField(withPlaceholder: "Fullname",
-                                       isSecureTextEntry: true)
+        return UITextField().textField(withPlaceholder: "Fullname")
     }()
     
     private let accountTypeSegmentedController: UISegmentedControl = {
@@ -68,6 +68,7 @@ class SignUpViewController: UIViewController {
     private let signUpButton: AuthButton = {
         let button = AuthButton()
         button.setTitle("Sign Up", for: .normal)
+        button.addTarget(self, action: #selector(handleSignUp), for: .touchUpInside)
         return button
     }()
     
@@ -96,6 +97,31 @@ class SignUpViewController: UIViewController {
     
     @objc private func handleSnowLoggin() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func handleSignUp() {
+        guard let email = emailTextField.text,
+              let password = passwordTextField.text,
+              let fullName = fullNameTextField.text else { return }
+        let accountTypeIndex = accountTypeSegmentedController.selectedSegmentIndex
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            if let error = error {
+                print("Failed to register user with error \(error)")
+                return
+            }
+            guard let uid = result?.user.uid else { return }
+            print("user Successfuly register, user id = \(uid)")
+            let values = ["email": email,
+                          "fullname": fullName,
+                          "accountType": accountTypeIndex] as [String:Any]
+            Database.database().reference().child("users").child(uid).updateChildValues(values) { error, ref in
+                guard let error = error else {
+                    print("Successfuly register user and save data..")
+                    return
+                }
+                print("Error: \(error)")
+            }
+        }
     }
     
     //MARK: Helper Methods
