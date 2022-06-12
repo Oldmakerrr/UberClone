@@ -106,20 +106,20 @@ class SignUpViewController: UIViewController {
         let accountTypeIndex = accountTypeSegmentedController.selectedSegmentIndex
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if let error = error {
-                print("Failed to register user with error \(error)")
+                print("DEBUG: Failed to register user with error \(error.localizedDescription)")
                 return
             }
             guard let uid = result?.user.uid else { return }
-            print("user Successfuly register, user id = \(uid)")
+            print("DEBUG: User successfuly register, user id = \(uid)")
             let values = ["email": email,
                           "fullname": fullName,
                           "accountType": accountTypeIndex] as [String:Any]
             Database.database().reference().child("users").child(uid).updateChildValues(values) { error, ref in
                 guard let error = error else {
-                    print("Successfuly register user and save data..")
+                    print("DEBUG: Successfuly save data..")
                     return
                 }
-                print("Error: \(error)")
+                print("DEBUG: Failed to save user data with error: \(error.localizedDescription)")
             }
         }
     }
