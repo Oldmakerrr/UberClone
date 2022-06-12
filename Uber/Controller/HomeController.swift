@@ -13,6 +13,8 @@ class HomeController: UIViewController {
     
     //MARK: - Properties
     
+    private let locationManager = CLLocationManager()
+    
     private let mapView = MKMapView()
     
     //MARK: - Lifecycle
@@ -20,6 +22,7 @@ class HomeController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         checkIfUserIsLoggedIn()
+        enableLocationServices()
         //signOut()
     }
     
@@ -67,6 +70,40 @@ extension HomeController: LoginControllerDelegate, SignUpViewControllerDelegate 
     
     func didComplete(_ signUpViewController: SignUpViewController) {
         configureUI()
+    }
+}
+
+//MARK: - LocationServices
+
+extension HomeController: CLLocationManagerDelegate {
+    
+    func enableLocationServices() {
+        locationManager.delegate = self
+        
+        switch locationManager.authorizationStatus {
+        case .notDetermined:
+            print("DEBUG: Not determined..")
+            locationManager.requestWhenInUseAuthorization()
+        case .restricted:
+            print("DEBUG: Auth restricted..")
+        case .denied:
+            break
+        case .authorizedAlways:
+            print("DEBUG: Auth always..")
+            locationManager.startUpdatingLocation()
+            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        case .authorizedWhenInUse:
+            print("DEBUG: Auth when in use..")
+            locationManager.requestAlwaysAuthorization()
+        @unknown default:
+            break
+        }
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if manager.authorizationStatus == .authorizedWhenInUse {
+            locationManager.requestAlwaysAuthorization()
+        }
     }
 }
 
