@@ -17,7 +17,13 @@ class LocationInputView: UIView {
     
     weak var delegate: LocationInputViewDelegate?
     
-    let titleLabel: UILabel = {
+    var user: User? {
+        didSet {
+            titleLabel.text = user?.fullname
+        }
+    }
+    
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .darkGray
         label.font = UIFont.systemFont(ofSize: 16)

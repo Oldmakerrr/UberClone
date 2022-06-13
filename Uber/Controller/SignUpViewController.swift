@@ -7,10 +7,13 @@
 
 import UIKit
 import Firebase
+import GeoFire
 
 class SignUpViewController: UIViewController {
     
     //MARK: Properties
+    
+    let location = LocationHandler.shared.locationManager.location
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -84,7 +87,7 @@ class SignUpViewController: UIViewController {
     override func viewDidLoad() {
         super .viewDidLoad()
         configureUI()
-        
+        print("DEBUG: location: \(location)")
     }
     
     //MARK: Selectors
@@ -105,28 +108,40 @@ class SignUpViewController: UIViewController {
             }
             guard let uid = result?.user.uid else { return }
             print("DEBUG: User successfuly register, user id = \(uid)")
+            
             let values = ["email": email,
                           "fullname": fullName,
                           "accountType": accountTypeIndex] as [String:Any]
-            Database.database().reference().child("users").child(uid).updateChildValues(values) { error, ref in
-                if let error = error {
-                    print("DEBUG: Failed to save user data with error: \(error.localizedDescription)")
-                }
-                print("DEBUG: Successfuly save data..")
-                DispatchQueue.main.async {
-                    let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
-                    if let homeController = keyWindow?.rootViewController as? HomeController {
-                        homeController.configureUI()
-                    }
-                }
-                self.dismiss(animated: true)
-            }
+            self.uploadDriverLocationToFirebase(accountTypeIndex: accountTypeIndex, uid: uid)
+            self.uploadUserDataAndGoToHomeController(uid: uid, values: values)
         }
     }
     
     //MARK: Helper Methods
     
-    func configureUI() {
+    private func uploadUserDataAndGoToHomeController(uid: String, values: [String : Any]) {
+        REF_USERS.child(uid).updateChildValues(values) { error, ref in
+            if let error = error {
+                print("DEBUG: Failed to save user data with error: \(error.localizedDescription)")
+            }
+            print("DEBUG: Successfuly save data..")
+            DispatchQueue.main.async {
+                let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+                if let homeController = keyWindow?.rootViewController as? HomeController {
+                    homeController.configureUI()
+                }
+            }
+            self.dismiss(animated: true)
+        }
+    }
+    
+    private func uploadDriverLocationToFirebase(accountTypeIndex: Int, uid: String) {
+        guard accountTypeIndex == 1, let location = location else { return }
+        let geoFire = GeoFire(firebaseRef: REF_DRIVERS_LOCATION)
+        geoFire.setLocation(location, forKey: uid)
+    }
+    
+    private func configureUI() {
         view.backgroundColor = .backGroundColor
         
         view.addSubview(titleLabel)
