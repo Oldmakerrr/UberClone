@@ -17,7 +17,7 @@ class LocationInputView: UIView {
     
     weak var delegate: LocationInputViewDelegate?
     
-    private let titleLabel: UILabel = {
+    let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .darkGray
         label.font = UIFont.systemFont(ofSize: 16)

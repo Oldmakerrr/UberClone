@@ -24,6 +24,12 @@ class HomeController: UIViewController {
     
     private final let locationInputViewHeight: CGFloat = UIScreen.main.bounds.height * 0.3
     
+    private var fullname: String? {
+        didSet { locationInputView.titleLabel.text = fullname }
+    }
+    
+    private let service = Service()
+    
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -34,6 +40,12 @@ class HomeController: UIViewController {
     }
     
     //MARK: - API
+    
+    private func fetchUserData() {
+        Service.shared.fetchUserData { fullname in
+            self.fullname = fullname
+        }
+    }
     
     private func checkIfUserIsLoggedIn() {
         if let uid = Auth.auth().currentUser?.uid {
@@ -66,6 +78,7 @@ class HomeController: UIViewController {
     }
     
     func configureUI() {
+        fetchUserData()
         configureMapUI()
         view.addSubview(locationInputActivationView)
         locationInputActivationView.delegate = self
