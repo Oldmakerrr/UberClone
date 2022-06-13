@@ -96,7 +96,12 @@ class HomeController: UIViewController {
         UIView.animate(withDuration: 0.5) {
             self.locationInputView.alpha = 1
         } completion: { _ in
-            print("DEBUG: present table view..")
+            UIView.animate(withDuration: 0.2) {
+                self.tableView.frame.origin.y = self.locationInputViewHeight
+            }
+
+            
+            
         }
 
     }
@@ -130,15 +135,18 @@ extension HomeController: LocationInputActivationViewDelegate {
 extension HomeController: LocationInputViewDelegate {
     
     func didComplete(_ locationInputView: LocationInputView) {
-        print("DEBUG: tapped back button..")
-        UIView.animate(withDuration: 0.3) {
-            self.locationInputView.alpha = 0
+        UIView.animate(withDuration: 0.2) {
+            self.tableView.frame.origin.y = self.view.frame.height
         } completion: { _ in
             UIView.animate(withDuration: 0.3) {
-                self.locationInputActivationView.alpha = 1
+                self.locationInputView.alpha = 0
+            } completion: { _ in
+                self.locationInputView.removeFromSuperview()
+                UIView.animate(withDuration: 0.3) {
+                    self.locationInputActivationView.alpha = 1
+                }
             }
         }
-
     }
     
     
