@@ -111,6 +111,7 @@ class HomeController: UIViewController {
         tableView.delegate = self
         tableView.register(LocationCell.self, forCellReuseIdentifier: LocationCell.identifier)
         tableView.rowHeight = 60
+        tableView.tableFooterView = UIView()
         let height = view.frame.height - locationInputViewHeight
         tableView.frame = CGRect(x: 0,
                                  y: view.frame.height,
@@ -186,19 +187,26 @@ extension HomeController: CLLocationManagerDelegate {
     }
 }
 
+//MARK: - UITableViewDataSource/Delegate
+
 extension HomeController: UITableViewDataSource, UITableViewDelegate {
     
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "test"
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return section == 0 ? 2 : 5
+    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: LocationCell.identifier, for: indexPath) as! LocationCell
         
         return cell
     }
-    
     
 }
