@@ -8,15 +8,9 @@
 import UIKit
 import Firebase
 
-protocol LoginControllerDelegate: AnyObject {
-    func didComplete(_ loginController: LoginController)
-}
-
 class LoginController: UIViewController {
 
     //MARK: - Properties
-    
-    weak var delegate: LoginControllerDelegate?
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -79,7 +73,6 @@ class LoginController: UIViewController {
     
     @objc func handleShowSighUp() {
         let controller = SignUpViewController()
-        controller.delegate = delegate as? SignUpViewControllerDelegate
         navigationController?.pushViewController(controller, animated: true)
     }
     
@@ -93,7 +86,13 @@ class LoginController: UIViewController {
                 return
             }
             print("DEBUG: Succesfully logged user in..")
-            self.delegate?.didComplete(self)
+            
+            DispatchQueue.main.async {
+                let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+                if let homeController = keyWindow?.rootViewController as? HomeController {
+                    homeController.configureUI()
+                }
+            }
             self.dismiss(animated: true)
         }
     }

@@ -57,12 +57,11 @@ class HomeController: UIViewController {
     
     private func goToLoginController() {
         let loginController = LoginController()
-        loginController.delegate = self
         let navigationController = UINavigationController(rootViewController: loginController)
         present(navigationController, animated: true)
     }
     
-    private func configureUI() {
+    func configureUI() {
         configureMapUI()
         view.addSubview(locationInputActivationView)
         locationInputActivationView.delegate = self
@@ -99,17 +98,6 @@ class HomeController: UIViewController {
 }
 
 //MARK: - AccountControllersDelegates
-
-extension HomeController: LoginControllerDelegate, SignUpViewControllerDelegate {
-    
-    func didComplete(_ loginController: LoginController) {
-        configureUI()
-    }
-    
-    func didComplete(_ signUpViewController: SignUpViewController) {
-        configureUI()
-    }
-}
 
 extension HomeController: LocationInputActivationViewDelegate {
     

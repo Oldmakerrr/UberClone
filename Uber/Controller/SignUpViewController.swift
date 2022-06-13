@@ -8,15 +8,9 @@
 import UIKit
 import Firebase
 
-protocol SignUpViewControllerDelegate: AnyObject {
-    func didComplete(_ signUpViewController: SignUpViewController)
-}
-
 class SignUpViewController: UIViewController {
     
     //MARK: Properties
-    
-    weak var delegate: SignUpViewControllerDelegate?
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -125,7 +119,12 @@ class SignUpViewController: UIViewController {
                     print("DEBUG: Failed to save user data with error: \(error.localizedDescription)")
                 }
                 print("DEBUG: Successfuly save data..")
-                self.delegate?.didComplete(self)
+                DispatchQueue.main.async {
+                    let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
+                    if let homeController = keyWindow?.rootViewController as? HomeController {
+                        homeController.configureUI()
+                    }
+                }
                 self.dismiss(animated: true)
             }
         }
