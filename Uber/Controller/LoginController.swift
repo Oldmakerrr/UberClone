@@ -50,14 +50,8 @@ class LoginController: UIViewController {
     
     private let dontHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
-        let attributeTitle = NSMutableAttributedString(string: "Don't have an account?  ", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        
-        attributeTitle.append(NSAttributedString(string: "Sign Up", attributes: [
-            NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.mainBlueTint]))
-        
+        button.accountButton(message: "Don't have an account?  ", title: "Sign Up") 
         button.addTarget(self, action: #selector(handleShowSighUp), for: .touchUpInside)
-        
-        button.setAttributedTitle(attributeTitle, for: .normal)
         return button
     }()
     

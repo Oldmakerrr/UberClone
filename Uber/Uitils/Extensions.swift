@@ -7,6 +7,20 @@
 
 import UIKit
 
+extension UIButton {
+    
+    func accountButton(message: String, title: String) {
+        
+        let attributeTitle = NSMutableAttributedString(string: message, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.lightGray])
+        
+        attributeTitle.append(NSAttributedString(string: title, attributes: [
+            NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.mainBlueTint]))
+        
+        setAttributedTitle(attributeTitle, for: .normal)
+    }
+    
+}
+
 extension UIColor {
     
     static func rgb(red: CGFloat, green: CGFloat, blue: CGFloat) -> UIColor {
@@ -97,10 +111,12 @@ extension UIView {
     }
     
     func centerX(inView view: UIView, constant: CGFloat = 0) {
+        translatesAutoresizingMaskIntoConstraints = false
         centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: constant).isActive = true
     }
     
     func centerY(inView view: UIView, leftAnchor: NSLayoutXAxisAnchor? = nil, paddingLeft: CGFloat = 0, constant: CGFloat = 0) {
+        translatesAutoresizingMaskIntoConstraints = false
         centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: constant).isActive = true
         if let leftAnchor = leftAnchor {
             anchor(left: leftAnchor, paddingLeft: paddingLeft)

@@ -74,14 +74,8 @@ class SignUpViewController: UIViewController {
     
     private let alreadyHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
-        let attributeTitle = NSMutableAttributedString(string: "Already have an account?  ", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.lightGray])
-        
-        attributeTitle.append(NSAttributedString(string: "Sign Up", attributes: [
-            NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.mainBlueTint]))
-        
+        button.accountButton(message: "Already have an account?  ", title: "Sign Up")
         button.addTarget(self, action: #selector(handleSnowLoggin), for: .touchUpInside)
-        
-        button.setAttributedTitle(attributeTitle, for: .normal)
         return button
     }()
     

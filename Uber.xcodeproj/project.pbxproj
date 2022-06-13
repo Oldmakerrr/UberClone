@@ -15,6 +15,7 @@
 		186E006128392555006E86E9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 186E005F28392555006E86E9 /* LaunchScreen.storyboard */; };
 		186E00712839269D006E86E9 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186E00702839269D006E86E9 /* LoginController.swift */; };
 		186E007328392F42006E86E9 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186E007228392F42006E86E9 /* Extensions.swift */; };
+		187EC8142857409E00C65FA7 /* LocationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187EC8132857409E00C65FA7 /* LocationCell.swift */; };
 		18C975602855E186001A6848 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18C9755F2855E186001A6848 /* GoogleService-Info.plist */; };
 		18C975622855FF97001A6848 /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C975612855FF97001A6848 /* HomeController.swift */; };
 		18C97564285626C5001A6848 /* LocationInputActivationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C97563285626C5001A6848 /* LocationInputActivationView.swift */; };
@@ -35,6 +36,7 @@
 		186E006228392555006E86E9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		186E00702839269D006E86E9 /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		186E007228392F42006E86E9 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		187EC8132857409E00C65FA7 /* LocationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationCell.swift; sourceTree = "<group>"; };
 		18C9755F2855E186001A6848 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		18C975612855FF97001A6848 /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
 		18C97563285626C5001A6848 /* LocationInputActivationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationInputActivationView.swift; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 			isa = PBXGroup;
 			children = (
 				180C1B8C28545C7F0018D0DA /* AuthButton.swift */,
+				187EC8132857409E00C65FA7 /* LocationCell.swift */,
 				18C975652856493B001A6848 /* LocationInputView.swift */,
 				18C97563285626C5001A6848 /* LocationInputActivationView.swift */,
 			);
@@ -269,6 +272,7 @@
 				18C975662856493B001A6848 /* LocationInputView.swift in Sources */,
 				186E00552839254F006E86E9 /* AppDelegate.swift in Sources */,
 				186E00712839269D006E86E9 /* LoginController.swift in Sources */,
+				187EC8142857409E00C65FA7 /* LocationCell.swift in Sources */,
 				186E00572839254F006E86E9 /* SceneDelegate.swift in Sources */,
 				18C97564285626C5001A6848 /* LocationInputActivationView.swift in Sources */,
 				180C1B8B28528D590018D0DA /* SignUpViewController.swift in Sources */,
