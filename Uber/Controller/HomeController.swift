@@ -41,8 +41,16 @@ class HomeController: UIViewController {
     
     //MARK: - API
     
-    private func fetchUserData() {
-        Service.shared.fetchUserData { user in
+    private func fetchDrivers() {
+        guard let location = locationManager?.location else { return }
+        Service.shared.fetchDrivers(location: location) { driver in
+            print("DEBUG: driver - name \(driver.fullname), email - \(driver.email), location - \(driver.location)")
+        }
+    }
+    
+    private func fetchCurrentUserData() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        Service.shared.fetchUserData(uid: uid) { user in
             self.user = user
         }
     }
@@ -81,7 +89,8 @@ class HomeController: UIViewController {
     }
     
     func configureUI() {
-        fetchUserData()
+        fetchCurrentUserData()
+        fetchDrivers()
         configureMapUI()
         view.addSubview(locationInputActivationView)
         locationInputActivationView.delegate = self
