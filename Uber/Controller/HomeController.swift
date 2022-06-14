@@ -9,6 +9,8 @@ import UIKit
 import Firebase
 import MapKit
 
+let driverAnnotationIdentifier = "DriverAnnotationIdentifier"
+
 class HomeController: UIViewController {
     
     //MARK: - Properties
@@ -44,7 +46,26 @@ class HomeController: UIViewController {
     private func fetchDrivers() {
         guard let location = locationManager?.location else { return }
         Service.shared.fetchDrivers(location: location) { driver in
-            print("DEBUG: driver - name \(driver.fullname), email - \(driver.email), location - \(driver.location)")
+            guard let coordinate = driver.location?.coordinate else { return }
+            let annotation = DriverAnnotation(uid: driver.uid, coordinate: coordinate)
+            
+            //check visiable annotation
+            var driverIsVisible: Bool {
+                return self.mapView.annotations.contains { annotation in
+                    guard let driverAnnotaton = annotation as? DriverAnnotation else { return false}
+                    //move annotetion if it already exist on mapView
+                    if driverAnnotaton.uid == driver.uid {
+                        driverAnnotaton.updateAnnotationPosition(withCoordinate: coordinate)
+                        return true
+                    }
+                    return false
+                }
+            }
+             
+            //or add annotation on MapView
+            if !driverIsVisible {
+                self.mapView.addAnnotation(annotation)
+            }
         }
     }
     
@@ -108,12 +129,13 @@ class HomeController: UIViewController {
     private func configureMapUI() {
         view.addSubview(mapView)
         mapView.frame = view.frame
-        
+        mapView.delegate = self
         mapView.showsUserLocation = true
         mapView.userTrackingMode = .follow
     }
     
     private func configureLocationInputView() {
+        
         view.addSubview(locationInputView)
         locationInputView.delegate = self
         locationInputView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: locationInputViewHeight)
@@ -124,8 +146,6 @@ class HomeController: UIViewController {
             UIView.animate(withDuration: 0.2) {
                 self.tableView.frame.origin.y = self.locationInputViewHeight
             }
-
-            
             
         }
 
@@ -228,4 +248,18 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
+}
+
+//MARK: MKMapViewDelegate
+
+extension HomeController: MKMapViewDelegate {
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if let annotation = annotation as? DriverAnnotation {
+            let view = MKAnnotationView(annotation: annotation, reuseIdentifier: driverAnnotationIdentifier)
+            view.image = UIImage(systemName: "arrowtriangle.right.circle.fill")
+            return view
+        }
+        return nil
+    }
 }
