@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MapKit
 
 protocol ReusableView: AnyObject {
     static var identifier: String { get }
@@ -15,14 +16,20 @@ class LocationCell: UITableViewCell, ReusableView {
     
     //MARK: - Properties
     
+    var placemark: MKPlacemark? {
+        didSet {
+            titleLabel.text = placemark?.name
+            addressLabel.text = placemark?.address
+        }
+    }
+    
     static var identifier: String {
         String(describing: self)
     }
     
-    private let titelLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "Title"
         return label
     }()
     
@@ -30,7 +37,6 @@ class LocationCell: UITableViewCell, ReusableView {
         let label = UILabel()
         label.textColor = .lightGray
         label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "Adress"
         return label
     }()
     
@@ -47,7 +53,7 @@ class LocationCell: UITableViewCell, ReusableView {
     }
     
     private func setupView() {
-        let stackView = UIStackView(arrangedSubviews: [titelLabel, addressLabel])
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, addressLabel])
         stackView.axis = .vertical
         stackView.distribution = .fillEqually
         stackView.spacing = 4

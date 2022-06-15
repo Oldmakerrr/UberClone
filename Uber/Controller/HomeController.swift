@@ -32,6 +32,8 @@ class HomeController: UIViewController {
     
     private let service = Service()
     
+    private var searchResults = [MKPlacemark]()
+    
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -79,7 +81,7 @@ class HomeController: UIViewController {
     private func checkIfUserIsLoggedIn() {
         if let uid = Auth.auth().currentUser?.uid {
             print("DEBUG: user id is \(uid)")
-            configureUI()
+            configure()
         } else {
             DispatchQueue.main.async {
                 self.goToLoginController()
@@ -103,15 +105,19 @@ class HomeController: UIViewController {
     
     //MARK: - Helper function
     
+    func configure() {
+        configureUI()
+        fetchCurrentUserData()
+        fetchDrivers()
+    }
+    
     private func goToLoginController() {
         let loginController = LoginController()
         let navigationController = UINavigationController(rootViewController: loginController)
         present(navigationController, animated: true)
     }
     
-    func configureUI() {
-        fetchCurrentUserData()
-        fetchDrivers()
+    private func configureUI() {
         configureMapUI()
         view.addSubview(locationInputActivationView)
         locationInputActivationView.delegate = self
@@ -151,7 +157,7 @@ class HomeController: UIViewController {
 
     }
     
-    func configureTableView() {
+    private func configureTableView() {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.register(LocationCell.self, forCellReuseIdentifier: LocationCell.identifier)
@@ -167,7 +173,45 @@ class HomeController: UIViewController {
     }
 }
 
-//MARK: - AccountControllersDelegates
+//MARK: - MapView Helper Functions
+
+private extension HomeController {
+    
+    func searchBy(naturalLanguageQuery: String, completion: @escaping([MKPlacemark]) -> Void) {
+        var results = [MKPlacemark]()
+        
+        //configure localSearch request
+        let request = MKLocalSearch.Request()
+        request.region = mapView.region
+        request.naturalLanguageQuery = naturalLanguageQuery
+        
+        let search = MKLocalSearch(request: request)
+        search.start { response, error in
+            guard let response = response else { return }
+            response.mapItems.forEach { mapItem in
+                results.append(mapItem.placemark)
+            }
+            completion(results)
+        }
+    }
+    
+    func dismissInputLocationView(completion: ((Bool) -> Void)? = nil) {
+        UIView.animate(withDuration: 0.2) {
+            self.tableView.frame.origin.y = self.view.frame.height
+        } completion: { _ in
+            UIView.animate(withDuration: 0.3) {
+                self.locationInputView.alpha = 0
+            } completion: { _ in
+                self.locationInputView.removeFromSuperview()
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.locationInputActivationView.alpha = 1
+                }, completion: completion)
+            }
+        }
+    }
+}
+
+//MARK: - LocationInputViewDelegate
 
 extension HomeController: LocationInputActivationViewDelegate {
     
@@ -180,19 +224,15 @@ extension HomeController: LocationInputActivationViewDelegate {
 
 extension HomeController: LocationInputViewDelegate {
     
-    func didComplete(_ locationInputView: LocationInputView) {
-        UIView.animate(withDuration: 0.2) {
-            self.tableView.frame.origin.y = self.view.frame.height
-        } completion: { _ in
-            UIView.animate(withDuration: 0.3) {
-                self.locationInputView.alpha = 0
-            } completion: { _ in
-                self.locationInputView.removeFromSuperview()
-                UIView.animate(withDuration: 0.3) {
-                    self.locationInputActivationView.alpha = 1
-                }
-            }
+    func executeSearch(query: String) {
+        searchBy(naturalLanguageQuery: query) { (results) in
+            self.searchResults = results
+            self.tableView.reloadData()
         }
+    }
+    
+    func didComplete(_ locationInputView: LocationInputView) {
+        dismissInputLocationView()
     }
     
     
@@ -239,13 +279,26 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? 2 : 5
+        return section == 0 ? 2 : searchResults.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: LocationCell.identifier, for: indexPath) as! LocationCell
-        
+        if indexPath.section == 1 {
+            let placemark = searchResults[indexPath.row]
+            cell.placemark = placemark
+        }
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedPlacemark = searchResults[indexPath.row]
+        dismissInputLocationView { _ in
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = selectedPlacemark.coordinate
+            self.mapView.addAnnotation(annotation)
+            self.mapView.selectAnnotation(annotation, animated: true)
+        }
     }
     
 }

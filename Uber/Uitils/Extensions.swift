@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MapKit
 
 extension UIButton {
     
@@ -177,5 +178,18 @@ extension CALayer {
         shadowOpacity = 0.55
         shadowOffset = CGSize(width: 0.5, height: 0.5)
         masksToBounds = false
+    }
+}
+
+extension MKPlacemark {
+    
+    var address: String? {
+        get {
+            guard let subThoroughfare = subThoroughfare,
+                  let thoroughfare = thoroughfare,
+                  let locality = locality,
+                  let administrativeArea = administrativeArea else { return nil }
+            return "\(subThoroughfare) \(thoroughfare), \(locality), \(administrativeArea)"
+        }
     }
 }
