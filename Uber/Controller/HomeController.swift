@@ -44,6 +44,7 @@ class HomeController: UIViewController {
     private let tableView = UITableView()
     
     private final let locationInputViewHeight: CGFloat = UIScreen.main.bounds.height * 0.3
+    private final let rideActionViewHeight: CGFloat = UIScreen.main.bounds.height * 0.4
     
     private var user: User? {
         didSet { locationInputView.user = user }
@@ -76,6 +77,8 @@ class HomeController: UIViewController {
             UIView.animate(withDuration: 0.3) {
                 self.locationInputActivationView.alpha = 1
                 self.configureActionButton(config: self.actionButtonConfig)
+            } completion: { _ in
+                self.animateRideActionView(shouldShow: false)
             }
             
         }
@@ -101,7 +104,7 @@ class HomeController: UIViewController {
                     return false
                 }
             }
-             
+            
             //or add annotation on MapView
             if !driverIsVisible {
                 self.mapView.addAnnotation(annotation)
@@ -211,16 +214,15 @@ class HomeController: UIViewController {
             }
             
         }
-
+        
     }
     
     private func configureRideActionView() {
         view.addSubview(rideActionView)
-        let height = UIScreen.main.bounds.height * 0.4
         rideActionView.frame = CGRect(x: 0,
-                                      y: view.frame.height - height,
+                                      y: view.frame.height,
                                       width: view.frame.width,
-                                      height: height)
+                                      height: rideActionViewHeight)
         
     }
     
@@ -246,6 +248,13 @@ class HomeController: UIViewController {
             UIView.animate(withDuration: 0.3, animations: {
                 self.locationInputView.alpha = 0
             }, completion: completion)
+        }
+    }
+    
+    func animateRideActionView(shouldShow: Bool) {
+        let yOrigin = shouldShow ? self.view.frame.height - self.rideActionViewHeight : self.view.frame.height
+        UIView.animate(withDuration: 0.3) {
+            self.rideActionView.frame.origin.y = yOrigin
         }
     }
     
@@ -407,10 +416,8 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
             self.mapView.addAnnotation(annotation)
             self.mapView.selectAnnotation(annotation, animated: true)
             self.zoomOnAnnotations()
-            
+            self.animateRideActionView(shouldShow: true)
         }
-        
-        
         
     }
     
