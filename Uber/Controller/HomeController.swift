@@ -30,6 +30,7 @@ class HomeController: UIViewController {
     
     private let locationInputActivationView = LocationInputActivationView()
     private let locationInputView = LocationInputView()
+    private let rideActionView = RideActionView(typeOfUber: "z")
     
     private let actionButton: UIButton = {
         let button = UIButton()
@@ -185,6 +186,7 @@ class HomeController: UIViewController {
             self.locationInputActivationView.alpha = 1
         }
         configureTableView()
+        configureRideActionView()
     }
     
     private func configureMapUI() {
@@ -210,6 +212,16 @@ class HomeController: UIViewController {
             
         }
 
+    }
+    
+    private func configureRideActionView() {
+        view.addSubview(rideActionView)
+        let height = UIScreen.main.bounds.height * 0.4
+        rideActionView.frame = CGRect(x: 0,
+                                      y: view.frame.height - height,
+                                      width: view.frame.width,
+                                      height: height)
+        
     }
     
     private func configureTableView() {

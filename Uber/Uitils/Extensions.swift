@@ -36,6 +36,13 @@ extension UIColor {
 
 extension UIView {
     
+    func separator(upView: UIView, paddingTop: CGFloat = 0, paddingLeft: CGFloat = 0, paddinRight: CGFloat = 0, height: CGFloat = 0.75) {
+        let separator = UIView()
+        separator.backgroundColor = .lightGray
+        addSubview(separator)
+        separator.anchor(top: upView.bottomAnchor, left: leftAnchor, right: rightAnchor, paddingTop: paddingTop, paddingLeft: paddingLeft, paddinRight: paddinRight, height: height)
+    }
+    
     func inputContainerView(image: UIImage?, textField: UITextField? = nil,
                             segmentedController: UISegmentedControl? = nil) -> UIView {
         let view = UIView()

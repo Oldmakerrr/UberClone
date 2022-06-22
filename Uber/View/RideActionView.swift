@@ -1,0 +1,116 @@
+//
+//  RideActionView.swift
+//  Uber
+//
+//  Created by Apple on 22.06.2022.
+//
+
+import UIKit
+
+protocol RideActionViewDelegate: AnyObject {
+    func didComplete(_ rideActionView: RideActionView)
+}
+
+class RideActionView: UIView {
+    
+    weak var delegate: RideActionViewDelegate?
+    
+    //MARK: - Properies
+    
+    let typeOfUber: String
+    
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 18)
+        label.text = "adfafsfsd"
+        label.textAlignment = .center
+        return label
+    }()
+    
+    let addressLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .lightGray
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.textAlignment = .center
+        label.text = "FFffffffff"
+        return label
+    }()
+    
+    private lazy var infoView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        let label = UILabel()
+        label.textColor = .white
+        label.font = UIFont.systemFont(ofSize: 30)
+        label.text = typeOfUber.uppercased()
+        view.addSubview(label)
+        label.centerX(inView: view)
+        label.centerY(inView: view)
+        return view
+    }()
+    
+    private lazy var typeOfUberLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 18)
+        label.textAlignment = .center
+        label.text = "Uber\(typeOfUber.uppercased())"
+        return label
+    }()
+    
+    private lazy var actionButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.backgroundColor = .black
+        button.setTitle("CONFIRM UBER\(typeOfUber.uppercased())", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(buttonActionPressed), for: .touchUpInside)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 20)
+        return button
+    }()
+    
+    //MARK: - Lifecycle
+    
+    init(typeOfUber: String = "x") {
+        self.typeOfUber = typeOfUber
+        super.init(frame: .zero)
+        configure()
+        setupViews()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupViews() {
+        let stack = UIStackView(arrangedSubviews: [titleLabel, addressLabel])
+        stack.axis = .vertical
+        stack.spacing = 4
+        stack.distribution = .fillEqually
+        addSubview(stack)
+        stack.centerX(inView: self)
+        stack.anchor(top: topAnchor, paddingTop: 12)
+        
+        addSubview(infoView)
+        infoView.centerX(inView: self)
+        infoView.anchor(top: stack.bottomAnchor, paddingTop: 16)
+        infoView.setDimensions(height: 60)
+        infoView.layer.cornerRadius = 60 / 2
+        
+        addSubview(typeOfUberLabel)
+        typeOfUberLabel.centerX(inView: self)
+        typeOfUberLabel.anchor(top: infoView.bottomAnchor, paddingTop: 8)
+        
+        separator(upView: typeOfUberLabel, paddingTop: 4)
+        
+        addSubview(actionButton)
+        actionButton.anchor(left: leftAnchor, bottom: safeAreaLayoutGuide.bottomAnchor, right: rightAnchor, paddingLeft: 12, paddingBottom: 24, paddinRight: 12, height: 50)
+    }
+    
+    private func configure() {
+        backgroundColor = .white
+        layer.applyShadow()
+    }
+    
+    @objc private func buttonActionPressed() {
+        delegate?.didComplete(self)
+    }
+}
