@@ -71,11 +71,12 @@ class HomeController: UIViewController {
             print("DEBUG: actionButtonConfig ")
         case .dismissActionView:
             removeAnnotationsAndOverlays()
+            mapView.showAnnotations(mapView.annotations, animated: true)
             UIView.animate(withDuration: 0.3) {
                 self.locationInputActivationView.alpha = 1
                 self.configureActionButton(config: self.actionButtonConfig)
             }
-
+            
         }
     }
     
@@ -242,6 +243,11 @@ class HomeController: UIViewController {
 
 private extension HomeController {
     
+    func zoomOnAnnotations() {
+        let annotations = mapView.annotations.filter({ !$0.isKind(of: DriverAnnotation.self) })
+        mapView.showAnnotations(annotations, animated: true)
+    }
+    
     func removeAnnotationsAndOverlays() {
         mapView.annotations.forEach { annotation in
             if let annotation = annotation as? MKPointAnnotation {
@@ -376,6 +382,7 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedPlacemark = searchResults[indexPath.row]
+        
         configureActionButton(config: actionButtonConfig)
         
         //add Poly line to mapView
@@ -387,8 +394,14 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
             annotation.coordinate = selectedPlacemark.coordinate
             self.mapView.addAnnotation(annotation)
             self.mapView.selectAnnotation(annotation, animated: true)
+            self.zoomOnAnnotations()
+            
         }
+        
+        
+        
     }
+    
     
 }
 
