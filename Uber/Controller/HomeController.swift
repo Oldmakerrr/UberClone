@@ -11,6 +11,15 @@ import MapKit
 
 let driverAnnotationIdentifier = "DriverAnnotationIdentifier"
 
+private enum ButtonActionConfiguration {
+    case showMenu
+    case dismissActionView
+    
+    init() {
+        self = .showMenu
+    }
+}
+
 class HomeController: UIViewController {
     
     //MARK: - Properties
@@ -21,6 +30,15 @@ class HomeController: UIViewController {
     
     private let locationInputActivationView = LocationInputActivationView()
     private let locationInputView = LocationInputView()
+    
+    private let actionButton: UIButton = {
+        let button = UIButton()
+        button.setBackgroundImage(UIImage(systemName: "list.bullet"), for: .normal)
+        button.tintColor = .black
+        button.addTarget(self, action: #selector(actionButtonPressed), for: .touchUpInside)
+        return button
+    }()
+    private var actionButtonConfig = ButtonActionConfiguration()
     
     private let tableView = UITableView()
     
@@ -41,6 +59,26 @@ class HomeController: UIViewController {
         checkIfUserIsLoggedIn()
         enableLocationServices()
         //signOut()
+    }
+    
+    //MARK: - Selectors
+    
+    @objc private func actionButtonPressed() {
+        switch actionButtonConfig {
+        case .showMenu:
+            print("DEBUG: actionButtonConfig ")
+        case .dismissActionView:
+            mapView.annotations.forEach { annotation in
+                if let annotation = annotation as? MKPointAnnotation {
+                    mapView.removeAnnotation(annotation)
+                }
+            }
+            UIView.animate(withDuration: 0.3) {
+                self.locationInputActivationView.alpha = 1
+                self.configureActionButton(config: self.actionButtonConfig)
+            }
+
+        }
     }
     
     //MARK: - API
@@ -111,6 +149,17 @@ class HomeController: UIViewController {
         fetchDrivers()
     }
     
+    private func configureActionButton(config: ButtonActionConfiguration) {
+        switch config {
+        case .showMenu :
+            self.actionButtonConfig = .dismissActionView
+            self.actionButton.setBackgroundImage(UIImage(systemName: "arrow.backward"), for: .normal)
+        case .dismissActionView :
+            self.actionButtonConfig = .showMenu
+            self.actionButton.setBackgroundImage(UIImage(systemName: "list.bullet"), for: .normal)
+        }
+    }
+    
     private func goToLoginController() {
         let loginController = LoginController()
         let navigationController = UINavigationController(rootViewController: loginController)
@@ -119,11 +168,18 @@ class HomeController: UIViewController {
     
     private func configureUI() {
         configureMapUI()
+        
+        view.addSubview(actionButton)
+        actionButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
+                            paddingTop: 16, paddingLeft: 20,
+                            width: 30, height: 30)
+        
+        print(UIScreen.main.bounds.height)
         view.addSubview(locationInputActivationView)
         locationInputActivationView.delegate = self
         locationInputActivationView.centerX(inView: view)
-        locationInputActivationView.setDimensions(height: 50, width: view.frame.width - 64)
-        locationInputActivationView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: view.frame.height/40)
+        locationInputActivationView.anchor(top: actionButton.bottomAnchor, paddingTop: 32,
+                                           width: view.frame.width - 64, height: 50)
         
         locationInputActivationView.alpha = 0
         UIView.animate(withDuration: 2) {
@@ -171,6 +227,17 @@ class HomeController: UIViewController {
         view.addSubview(tableView)
         
     }
+    
+    func dismissInputLocationView(completion: ((Bool) -> Void)? = nil) {
+        UIView.animate(withDuration: 0.2) {
+            self.tableView.frame.origin.y = self.view.frame.height
+        } completion: { _ in
+            UIView.animate(withDuration: 0.3, animations: {
+                self.locationInputView.alpha = 0
+            }, completion: completion)
+        }
+    }
+    
 }
 
 //MARK: - MapView Helper Functions
@@ -195,20 +262,6 @@ private extension HomeController {
         }
     }
     
-    func dismissInputLocationView(completion: ((Bool) -> Void)? = nil) {
-        UIView.animate(withDuration: 0.2) {
-            self.tableView.frame.origin.y = self.view.frame.height
-        } completion: { _ in
-            UIView.animate(withDuration: 0.3) {
-                self.locationInputView.alpha = 0
-            } completion: { _ in
-                self.locationInputView.removeFromSuperview()
-                UIView.animate(withDuration: 0.3, animations: {
-                    self.locationInputActivationView.alpha = 1
-                }, completion: completion)
-            }
-        }
-    }
 }
 
 //MARK: - LocationInputViewDelegate
@@ -232,7 +285,12 @@ extension HomeController: LocationInputViewDelegate {
     }
     
     func didComplete(_ locationInputView: LocationInputView) {
-        dismissInputLocationView()
+        dismissInputLocationView { _ in
+            self.locationInputView.removeFromSuperview()
+            UIView.animate(withDuration: 0.3) {
+                self.locationInputActivationView.alpha = 1
+            }
+        }
     }
     
     
@@ -293,6 +351,7 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedPlacemark = searchResults[indexPath.row]
+        configureActionButton(config: actionButtonConfig)
         dismissInputLocationView { _ in
             let annotation = MKPointAnnotation()
             annotation.coordinate = selectedPlacemark.coordinate
