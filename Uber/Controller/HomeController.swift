@@ -52,6 +52,8 @@ class HomeController: UIViewController {
     
     private var searchResults = [MKPlacemark]()
     
+    private var routes: MKRoute?
+    
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -68,11 +70,7 @@ class HomeController: UIViewController {
         case .showMenu:
             print("DEBUG: actionButtonConfig ")
         case .dismissActionView:
-            mapView.annotations.forEach { annotation in
-                if let annotation = annotation as? MKPointAnnotation {
-                    mapView.removeAnnotation(annotation)
-                }
-            }
+            removeAnnotationsAndOverlays()
             UIView.animate(withDuration: 0.3) {
                 self.locationInputActivationView.alpha = 1
                 self.configureActionButton(config: self.actionButtonConfig)
@@ -244,6 +242,33 @@ class HomeController: UIViewController {
 
 private extension HomeController {
     
+    func removeAnnotationsAndOverlays() {
+        mapView.annotations.forEach { annotation in
+            if let annotation = annotation as? MKPointAnnotation {
+                mapView.removeAnnotation(annotation)
+            }
+        }
+        mapView.overlays.forEach { overlay in
+            mapView.removeOverlay(overlay)
+        }
+    }
+    
+    func generatePolyLine(forDestination destination: MKMapItem) {
+        
+        let request = MKDirections.Request()
+        request.source = MKMapItem.forCurrentLocation()
+        request.destination = destination
+        request.transportType = .automobile
+        
+        let directionRequest = MKDirections(request: request)
+        directionRequest.calculate { responce, error in
+            guard let responce = responce else { return }
+            self.routes = responce.routes.first
+            guard let polyline = self.routes?.polyline else { return }
+            self.mapView.addOverlay(polyline)
+        }
+    }
+    
     func searchBy(naturalLanguageQuery: String, completion: @escaping([MKPlacemark]) -> Void) {
         var results = [MKPlacemark]()
         
@@ -352,6 +377,11 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedPlacemark = searchResults[indexPath.row]
         configureActionButton(config: actionButtonConfig)
+        
+        //add Poly line to mapView
+        let destination = MKMapItem(placemark: selectedPlacemark)
+        generatePolyLine(forDestination: destination)
+        
         dismissInputLocationView { _ in
             let annotation = MKPointAnnotation()
             annotation.coordinate = selectedPlacemark.coordinate
@@ -365,6 +395,17 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
 //MARK: MKMapViewDelegate
 
 extension HomeController: MKMapViewDelegate {
+    
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        if let route = self.routes {
+            let polyline = route.polyline
+            let lineRender = MKPolylineRenderer(polyline: polyline)
+            lineRender.strokeColor = .mainBlueTint
+            lineRender.lineWidth = 3
+            return lineRender
+        }
+        return MKOverlayRenderer()
+    }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         if let annotation = annotation as? DriverAnnotation {
