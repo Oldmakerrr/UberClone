@@ -12,6 +12,7 @@ import GeoFire
 let DB_REF = Database.database().reference()
 let REF_USERS = DB_REF.child("users")
 let REF_DRIVERS_LOCATION = DB_REF.child("driver-locatoins")
+let REF_TRIPS = DB_REF.child("trips")
 
 struct Service {
     
@@ -38,5 +39,19 @@ struct Service {
             })
         }
 
+    }
+    
+    func uploadTrip(_ pickupCoordinate: CLLocationCoordinate2D,
+                    destinationCoordinate: CLLocationCoordinate2D,
+                    complition: @escaping(Error?, DatabaseReference) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let pickupArray = [pickupCoordinate.latitude, pickupCoordinate.longitude]
+        let destinationArray = [destinationCoordinate.latitude, destinationCoordinate.longitude]
+        
+        let values = ["pickupCoordinates" : pickupArray,
+                      "destinationCoordinates" : destinationArray]
+        
+        REF_TRIPS.child(uid).updateChildValues(values, withCompletionBlock: complition)
+    
     }
 }

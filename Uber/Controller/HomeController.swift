@@ -219,6 +219,7 @@ class HomeController: UIViewController {
     
     private func configureRideActionView() {
         view.addSubview(rideActionView)
+        rideActionView.delegate = self
         rideActionView.frame = CGRect(x: 0,
                                       y: view.frame.height,
                                       width: view.frame.width,
@@ -448,4 +449,22 @@ extension HomeController: MKMapViewDelegate {
         }
         return nil
     }
+}
+
+//MARK: - RideActionViewDelegate
+
+extension HomeController: RideActionViewDelegate {
+    
+    func didComplete(_ rideActionView: RideActionView) {
+        guard let pickupCoordinate = locationManager?.location?.coordinate,
+        let destinationCoordinate = rideActionView.destination?.coordinate else { return }
+        Service.shared.uploadTrip(pickupCoordinate, destinationCoordinate: destinationCoordinate) { error, reference in
+            if let error = error {
+                print("DEBUG: Failed to upload trip with error: \(error.localizedDescription)")
+                return
+            }
+            print("DEBUG: Did upload trip successfully")
+        }
+    }
+    
 }
