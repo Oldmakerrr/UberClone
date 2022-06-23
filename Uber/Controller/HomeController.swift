@@ -30,7 +30,7 @@ class HomeController: UIViewController {
     
     private let locationInputActivationView = LocationInputActivationView()
     private let locationInputView = LocationInputView()
-    private let rideActionView = RideActionView(typeOfUber: "z")
+    private let rideActionView = RideActionView(typeOfUber: "x")
     
     private let actionButton: UIButton = {
         let button = UIButton()
@@ -266,7 +266,7 @@ private extension HomeController {
     
     func zoomOnAnnotations() {
         let annotations = mapView.annotations.filter({ !$0.isKind(of: DriverAnnotation.self) })
-        mapView.showAnnotations(annotations, animated: true)
+        mapView.zoomToFit(annotations: annotations)
     }
     
     func removeAnnotationsAndOverlays() {
@@ -417,6 +417,7 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
             self.mapView.selectAnnotation(annotation, animated: true)
             self.zoomOnAnnotations()
             self.animateRideActionView(shouldShow: true)
+            self.rideActionView.destination = selectedPlacemark
         }
         
     }

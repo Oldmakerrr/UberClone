@@ -6,12 +6,20 @@
 //
 
 import UIKit
+import MapKit
 
 protocol RideActionViewDelegate: AnyObject {
     func didComplete(_ rideActionView: RideActionView)
 }
 
 class RideActionView: UIView {
+    
+    var destination: MKPlacemark? {
+        didSet {
+            titleLabel.text = destination?.name
+            addressLabel.text = destination?.address
+        }
+    }
     
     weak var delegate: RideActionViewDelegate?
     
@@ -22,7 +30,6 @@ class RideActionView: UIView {
     let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 18)
-        label.text = "adfafsfsd"
         label.textAlignment = .center
         return label
     }()
@@ -32,7 +39,6 @@ class RideActionView: UIView {
         label.textColor = .lightGray
         label.font = UIFont.systemFont(ofSize: 16)
         label.textAlignment = .center
-        label.text = "FFffffffff"
         return label
     }()
     
