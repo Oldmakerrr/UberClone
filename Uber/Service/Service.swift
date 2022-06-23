@@ -21,8 +21,11 @@ struct Service {
     func fetchUserData(uid: String, complition: @escaping(User) -> Void) {
         REF_USERS.child(uid).observeSingleEvent(of: .value) { snapshot in
             guard let dictionary = snapshot.value as? [String: Any] else { return }
-            let user = User(uid: uid, dictionary: dictionary)
-            complition(user)
+                if let user = try? User(uid: uid, dictionary: dictionary) {
+                    complition(user)
+                } else {
+                    print("DEBUG: Create User failed")
+                }
         }
     }
    
@@ -49,7 +52,8 @@ struct Service {
         let destinationArray = [destinationCoordinate.latitude, destinationCoordinate.longitude]
         
         let values = ["pickupCoordinates" : pickupArray,
-                      "destinationCoordinates" : destinationArray]
+                      "destinationCoordinates" : destinationArray,
+                      "state": TripState.requested.rawValue] as [String : Any]
         
         REF_TRIPS.child(uid).updateChildValues(values, withCompletionBlock: complition)
     
