@@ -62,7 +62,9 @@ class HomeController: UIViewController {
     
     private var trip: Trip? {
         didSet {
-            
+            guard let trip = trip else { return }
+            let pickupController = PickupController(trip: trip)
+            present(pickupController, animated: true)
         }
     }
     
