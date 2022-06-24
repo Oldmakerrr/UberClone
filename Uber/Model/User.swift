@@ -7,12 +7,17 @@
 
 import CoreLocation
 
+enum AccountType: Int {
+    case passenger
+    case driver
+}
+
 struct User {
     
     let uid: String
     let fullname: String
     let email: String
-    let accountType: Int
+    let accountType: AccountType
     var location: CLLocation?
     
     init(uid: String, dictionary: [String: Any]) throws {
@@ -27,13 +32,10 @@ struct User {
         } else {
             throw Err(message: "create User failed: email not found")
         }
-        if let accountType = dictionary["accountType"] as? Int {
+        if let rawValue = dictionary["accountType"] as? Int, let accountType = AccountType(rawValue: rawValue) {
             self.accountType = accountType
         } else {
             throw Err(message: "create User failed: accountType not found")
         }
-//        self.fullname = dictionary["fullname"] as? String ??
-//        self.email = dictionary["email"] as? String ?? ""
-//        self.accountType = dictionary["accountType"] as? Int ?? 0
     }
 }

@@ -47,7 +47,23 @@ class HomeController: UIViewController {
     private final let rideActionViewHeight: CGFloat = UIScreen.main.bounds.height * 0.4
     
     private var user: User? {
-        didSet { locationInputView.user = user }
+        didSet {
+            locationInputView.user = user
+            guard let accountType = user?.accountType else { return }
+            switch accountType {
+            case .passenger:
+                fetchDrivers()
+                configureLocationInputActivationView()
+            case .driver:
+                observeTrips()
+            }
+        }
+    }
+    
+    private var trip: Trip? {
+        didSet {
+            
+        }
     }
     
     private let service = Service()
@@ -112,6 +128,12 @@ class HomeController: UIViewController {
         }
     }
     
+    private func observeTrips() {
+        Service.shared.observeTrips { trip in
+            self.trip = trip
+        }
+    }
+    
     private func fetchCurrentUserData() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         Service.shared.fetchUserData(uid: uid) { user in
@@ -144,24 +166,14 @@ class HomeController: UIViewController {
         }
     }
     
-    //MARK: - Helper function
+//MARK: - Helper function
     
     func configure() {
         configureUI()
         fetchCurrentUserData()
-        fetchDrivers()
     }
     
-    private func configureActionButton(config: ButtonActionConfiguration) {
-        switch config {
-        case .showMenu :
-            self.actionButtonConfig = .dismissActionView
-            self.actionButton.setBackgroundImage(UIImage(systemName: "arrow.backward"), for: .normal)
-        case .dismissActionView :
-            self.actionButtonConfig = .showMenu
-            self.actionButton.setBackgroundImage(UIImage(systemName: "list.bullet"), for: .normal)
-        }
-    }
+    
     
     private func goToLoginController() {
         let loginController = LoginController()
@@ -170,7 +182,7 @@ class HomeController: UIViewController {
     }
     
     private func configureUI() {
-        configureMapUI()
+        configureMapView()
         
         view.addSubview(actionButton)
         actionButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
@@ -178,6 +190,14 @@ class HomeController: UIViewController {
                             width: 30, height: 30)
         
         print(UIScreen.main.bounds.height)
+        
+        configureTableView()
+        configureRideActionView()
+    }
+    
+    //MARK: - Helper function Configure SubViews
+    
+    private func configureLocationInputActivationView() {
         view.addSubview(locationInputActivationView)
         locationInputActivationView.delegate = self
         locationInputActivationView.centerX(inView: view)
@@ -188,11 +208,9 @@ class HomeController: UIViewController {
         UIView.animate(withDuration: 2) {
             self.locationInputActivationView.alpha = 1
         }
-        configureTableView()
-        configureRideActionView()
     }
     
-    private func configureMapUI() {
+    private func configureMapView() {
         view.addSubview(mapView)
         mapView.frame = view.frame
         mapView.delegate = self
@@ -241,6 +259,19 @@ class HomeController: UIViewController {
         view.addSubview(tableView)
         
     }
+    
+    private func configureActionButton(config: ButtonActionConfiguration) {
+        switch config {
+        case .showMenu :
+            self.actionButtonConfig = .dismissActionView
+            self.actionButton.setBackgroundImage(UIImage(systemName: "arrow.backward"), for: .normal)
+        case .dismissActionView :
+            self.actionButtonConfig = .showMenu
+            self.actionButton.setBackgroundImage(UIImage(systemName: "list.bullet"), for: .normal)
+        }
+    }
+    
+    //MARK: - Helper function Animate
     
     func dismissInputLocationView(completion: ((Bool) -> Void)? = nil) {
         UIView.animate(withDuration: 0.2) {

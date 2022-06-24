@@ -11,6 +11,13 @@ struct Err: Error {
     let message: String
 }
 
+enum TripState: Int {
+    case requested
+    case accepted
+    case inProgress
+    case completed
+}
+
 struct Trip {
     
     let pickupCoordinates: CLLocationCoordinate2D
@@ -46,9 +53,4 @@ struct Trip {
     }
 }
 
-enum TripState: Int {
-    case requested
-    case accepted
-    case inProgress
-    case completed
-}
+
