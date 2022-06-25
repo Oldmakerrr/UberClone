@@ -63,8 +63,7 @@ class HomeController: UIViewController {
     private var trip: Trip? {
         didSet {
             guard let trip = trip else { return }
-            let pickupController = PickupController(trip: trip)
-            present(pickupController, animated: true)
+            goToPickupController(trip: trip)
         }
     }
     
@@ -175,12 +174,18 @@ class HomeController: UIViewController {
         fetchCurrentUserData()
     }
     
-    
-    
     private func goToLoginController() {
         let loginController = LoginController()
+        loginController.modalPresentationStyle = .overFullScreen
         let navigationController = UINavigationController(rootViewController: loginController)
         present(navigationController, animated: true)
+    }
+    
+    private func goToPickupController(trip: Trip) {
+        let pickupController = PickupController(trip: trip)
+        pickupController.delegate = self
+        navigationController?.pushViewController(pickupController, animated: true)
+        present(pickupController, animated: true)
     }
     
     private func configureUI() {
@@ -498,6 +503,17 @@ extension HomeController: RideActionViewDelegate {
             }
             print("DEBUG: Did upload trip successfully")
         }
+    }
+    
+}
+
+//MARK: PickupController Delegate
+
+extension HomeController: PickupControllerDelegate {
+    
+    func didAcceptTrip(_ pickupController: PickupController) {
+        self.trip?.state = .accepted
+        pickupController.dismiss(animated: true)
     }
     
 }

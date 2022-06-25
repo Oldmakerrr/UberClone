@@ -24,7 +24,7 @@ struct Trip {
     let destinationCoordinates: CLLocationCoordinate2D
     let passangerUid: String
     var drivarUid: String?
-    var state: TripState!
+    var state: TripState
     
     init(passangerUid: String, dictionary: [String : Any]) throws {
         self.passangerUid = passangerUid
@@ -45,8 +45,8 @@ struct Trip {
             throw Err(message: "Create trip failed: destinationCoordinates - not found")
         }
         self.drivarUid = dictionary["driverUid"] as? String
-        if let state = dictionary["state"] as? Int {
-            self.state = TripState(rawValue: state)
+        if let value = dictionary["state"] as? Int, let state = TripState(rawValue: value) {
+            self.state = state
         } else {
             throw Err(message: "Create trip failed: state - not found")
         }

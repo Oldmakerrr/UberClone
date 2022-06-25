@@ -8,9 +8,15 @@
 import UIKit
 import MapKit
 
+protocol PickupControllerDelegate: AnyObject {
+    func didAcceptTrip(_ pickupController: PickupController)
+}
+
 class PickupController: UIViewController {
     
     //MARK: - Properties
+    
+    weak var delegate: PickupControllerDelegate?
     
     private let mapView = MKMapView()
     
@@ -29,7 +35,6 @@ class PickupController: UIViewController {
         label.text = "Would you like to pickup this passenger?"
         label.font = UIFont.systemFont(ofSize: 16)
         label.textColor = .white
-        
         return label
     }()
     
@@ -52,6 +57,7 @@ class PickupController: UIViewController {
     init(trip: Trip) {
         self.trip = trip
         super.init(nibName: nil, bundle: nil)
+        modalPresentationStyle = .overFullScreen
     }
     
     required init?(coder: NSCoder) {
@@ -118,7 +124,9 @@ class PickupController: UIViewController {
     }
     
     @objc private func handleAcceptTrip() {
-        print("DEBUG: Accept trip")
+        Service.shared.acceptTrip(trip: trip) { error, reference in
+            self.delegate?.didAcceptTrip(self) 
+        }
     }
     
     //MARK: - API
