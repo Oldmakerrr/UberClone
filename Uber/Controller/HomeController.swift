@@ -115,6 +115,10 @@ class HomeController: UIViewController {
             self.trip = trip
             if trip.state == .accepted {
                 self.shouldPresentLoadingView(false)
+                guard let driverUid = trip.drivarUid else { return }
+                Service.shared.fetchUserData(uid: driverUid) { driver in
+                    self.animateRideActionView(shouldShow: true, user: driver, withConfig: .tripAccepted)
+                }
             }
         }
     }
@@ -306,7 +310,15 @@ class HomeController: UIViewController {
         }
     }
     
-    func animateRideActionView(shouldShow: Bool) {
+    func animateRideActionView(shouldShow: Bool,
+                               destination: MKPlacemark? = nil,
+                               user: User? = nil,
+                               withConfig config: RideActionViewConfiguration? = nil) {
+        
+        rideActionView.user = user
+        rideActionView.destination = destination
+        rideActionView.configureUI(withConfig: config)
+        
         let yOrigin = shouldShow ? self.view.frame.height - self.rideActionViewHeight : self.view.frame.height
         UIView.animate(withDuration: 0.3) {
             self.rideActionView.frame.origin.y = yOrigin
@@ -471,8 +483,7 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
             self.mapView.addAnnotation(annotation)
             self.mapView.selectAnnotation(annotation, animated: true)
             self.zoomOnAnnotations()
-            self.animateRideActionView(shouldShow: true)
-            self.rideActionView.destination = selectedPlacemark
+            self.animateRideActionView(shouldShow: true, destination: selectedPlacemark)
         }
         
     }
@@ -544,7 +555,11 @@ extension HomeController: PickupControllerDelegate {
         generatePolyLine(forDestination: mapItem)
         
         mapView.zoomToFit(annotations: mapView.annotations)
-        pickupController.dismiss(animated: true)
+        pickupController.dismiss(animated: true) {
+            Service.shared.fetchUserData(uid: trip.passangerUid) { passenger in
+                self.animateRideActionView(shouldShow: true, user: passenger, withConfig: .tripAccepted)
+            }
+        }
     }
     
 }

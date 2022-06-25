@@ -24,10 +24,10 @@ enum RideActionViewConfiguration {
     }
 }
 
-enum RideActionButton: CustomStringConvertible {
+enum RideActionButtonConfig: CustomStringConvertible {
     case requestRide
     case cancel
-    case setDirection
+    case getDirection
     case pickup
     case dropOff
     
@@ -37,7 +37,7 @@ enum RideActionButton: CustomStringConvertible {
             return "CONFIRM UBERX"
         case .cancel:
             return "CANCEL"
-        case .setDirection:
+        case .getDirection:
             return "GET DIRECTION"
         case .pickup:
             return "PICKUP PASSENGER"
@@ -53,8 +53,12 @@ enum RideActionButton: CustomStringConvertible {
 
 class RideActionView: UIView {
     
-    var config = RideActionViewConfiguration()
-    var buttonAction = RideActionButton()
+    private var config = RideActionViewConfiguration()
+    private var buttonActionConfig = RideActionButtonConfig() {
+        didSet{
+            actionButton.setTitle(buttonActionConfig.description, for: .normal)
+        }
+    }
     
     var destination: MKPlacemark? {
         didSet {
@@ -62,6 +66,8 @@ class RideActionView: UIView {
             addressLabel.text = destination?.address
         }
     }
+    
+    var user: User?
     
     weak var delegate: RideActionViewDelegate?
     
@@ -164,7 +170,28 @@ class RideActionView: UIView {
     
     //MARK: - Helper function
     
-    func configureUI(withConfig config: RideActionViewConfiguration) {
-        
+    func configureUI(withConfig config: RideActionViewConfiguration?) {
+        guard let config = config else { return }
+        switch config {
+        case .requestRide:
+            buttonActionConfig = .requestRide
+            typeOfUberLabel.text = "Uber\(typeOfUber.uppercased())"
+        case .tripAccepted:
+            guard let user = user else { return }
+            switch user.accountType {
+            case .passenger:
+                buttonActionConfig = .getDirection
+                titleLabel.text = "En route to passenger"
+            case .driver:
+                buttonActionConfig = .cancel
+                titleLabel.text = "Driver en route"
+            }
+        case .pickupPassenger:
+            break
+        case .tripInProgress:
+            break
+        case .endTrip:
+            break
+        }
     }
 }

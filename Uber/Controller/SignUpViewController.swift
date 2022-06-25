@@ -61,7 +61,7 @@ class SignUpViewController: UIViewController {
     }()
     
     private let accountTypeSegmentedController: UISegmentedControl = {
-        let segmetedController = UISegmentedControl(items: ["Rider", "Driver"])
+        let segmetedController = UISegmentedControl(items: ["Passenger", "Driver"])
         segmetedController.backgroundColor = .backGroundColor
         segmetedController.tintColor = UIColor(white: 1, alpha: 0.87)
         segmetedController.selectedSegmentIndex = 0
