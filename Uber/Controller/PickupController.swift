@@ -61,25 +61,37 @@ class PickupController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        configureMapView()
     }
     
     //MARK: - Helper Function
     
-    private func configureUI() {
-        view.backgroundColor = .backGroundColor
-        configureCancleButton()
-        configureMapView()
-        configurePickupLabel()
-        configureAcceptTropButton()
+    private func configureMapView() {
+        let region = MKCoordinateRegion(center: trip.pickupCoordinates, latitudinalMeters: 1000, longitudinalMeters: 1000)
+        mapView.setRegion(region, animated: true)
+        
+        
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = trip.pickupCoordinates
+        mapView.addAnnotation(annotation)
+        mapView.selectAnnotation(annotation, animated: true)
     }
     
-    private func configureCancleButton() {
+    private func configureUI() {
+        view.backgroundColor = .backGroundColor
+        setupCancelButton()
+        setupMapView()
+        setupPickupLabel()
+        setupAcceptTripButton()
+    }
+    
+    private func setupCancelButton() {
         view.addSubview(cancelButton)
         cancelButton.anchor(top: view?.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
                             paddingTop: 16, paddingLeft: 16)
     }
     
-    private func configureMapView() {
+    private func setupMapView() {
         view.addSubview(mapView)
         mapView.setDimensions(height: 240)
         mapView.layer.cornerRadius = 240 / 2
@@ -87,13 +99,13 @@ class PickupController: UIViewController {
         mapView.centerY(inView: view, constant: -80)
     }
     
-    private func configurePickupLabel() {
+    private func setupPickupLabel() {
         view.addSubview(pickupLabel)
         pickupLabel.centerX(inView: view)
         pickupLabel.anchor(top: mapView.bottomAnchor, paddingTop: 16)
     }
     
-    private func configureAcceptTropButton() {
+    private func setupAcceptTripButton() {
         view.addSubview(acceptTripButton)
         acceptTripButton.anchor(top: pickupLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor,
                                 paddingTop: 16, paddingLeft: 32, paddinRight: 32, height: 40)
