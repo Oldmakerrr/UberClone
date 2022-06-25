@@ -79,7 +79,7 @@ class HomeController: UIViewController {
         super.viewDidLoad()
         checkIfUserIsLoggedIn()
         enableLocationServices()
-        //signOut()
+//        signOut()
     }
     
     //MARK: - Selectors
@@ -176,8 +176,8 @@ class HomeController: UIViewController {
     
     private func goToLoginController() {
         let loginController = LoginController()
-        loginController.modalPresentationStyle = .overFullScreen
         let navigationController = UINavigationController(rootViewController: loginController)
+        navigationController.modalPresentationStyle = .overFullScreen
         present(navigationController, animated: true)
     }
     
@@ -496,12 +496,17 @@ extension HomeController: RideActionViewDelegate {
     func didComplete(_ rideActionView: RideActionView) {
         guard let pickupCoordinate = locationManager?.location?.coordinate,
         let destinationCoordinate = rideActionView.destination?.coordinate else { return }
+        shouldPresentLoadingView(true, message: "Finding your a ride..")
         Service.shared.uploadTrip(pickupCoordinate, destinationCoordinate: destinationCoordinate) { error, reference in
             if let error = error {
                 print("DEBUG: Failed to upload trip with error: \(error.localizedDescription)")
                 return
             }
-            print("DEBUG: Did upload trip successfully")
+            UIView.animate(withDuration: 0.2) {
+                self.rideActionView.frame.origin.y = self.view.frame.height
+            } completion: { _ in
+                print("DEBUG: Did upload trip successfully")
+            }
         }
     }
     
