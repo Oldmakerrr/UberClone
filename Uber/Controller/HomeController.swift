@@ -54,6 +54,7 @@ class HomeController: UIViewController {
             case .passenger:
                 fetchDrivers()
                 configureLocationInputActivationView()
+                observeCurrentTrip()
             case .driver:
                 observeTrips()
             }
@@ -62,8 +63,14 @@ class HomeController: UIViewController {
     
     private var trip: Trip? {
         didSet {
-            guard let trip = trip else { return }
-            goToPickupController(trip: trip)
+            guard let user = user else { return }
+            switch user.accountType {
+            case .passenger:
+                print("DEBUG: Your trip load..")
+            case .driver:
+                guard let trip = trip else { return }
+                goToPickupController(trip: trip)
+            }
         }
     }
     
@@ -79,7 +86,7 @@ class HomeController: UIViewController {
         super.viewDidLoad()
         checkIfUserIsLoggedIn()
         enableLocationServices()
-//        signOut()
+       // signOut()
     }
     
     //MARK: - Selectors
@@ -102,6 +109,15 @@ class HomeController: UIViewController {
     }
     
     //MARK: - API
+    
+    private func observeCurrentTrip() {
+        Service.shared.observeCurrentTrip { trip in
+            self.trip = trip
+            if trip.state == .accepted {
+                self.shouldPresentLoadingView(false)
+            }
+        }
+    }
     
     private func fetchDrivers() {
         guard let location = locationManager?.location else { return }
