@@ -93,14 +93,18 @@ class RideActionView: UIView {
     private lazy var infoView: UIView = {
         let view = UIView()
         view.backgroundColor = .black
+        view.addSubview(infoViewLabel)
+        infoViewLabel.centerX(inView: view)
+        infoViewLabel.centerY(inView: view)
+        return view
+    }()
+    
+    private lazy var infoViewLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
         label.font = UIFont.systemFont(ofSize: 30)
         label.text = typeOfUber.uppercased()
-        view.addSubview(label)
-        label.centerX(inView: view)
-        label.centerY(inView: view)
-        return view
+        return label
     }()
     
     private lazy var typeOfUberLabel: UILabel = {
@@ -165,12 +169,25 @@ class RideActionView: UIView {
     }
     
     @objc private func buttonActionPressed() {
-        delegate?.didComplete(self)
+        switch buttonActionConfig {
+        case .requestRide:
+            delegate?.didComplete(self)
+        case .cancel:
+            print("DEBUG: Handle cancel..")
+        case .getDirection:
+            print("DEBUG: Handle get directions..")
+        case .pickup:
+            print("DEBUG: Handle pickup..")
+        case .dropOff:
+            print("DEBUG: Handle drop off..")
+        }
+        
     }
     
     //MARK: - Helper function
     
     func configureUI(withConfig config: RideActionViewConfiguration?) {
+        actionButton.isEnabled = true
         guard let config = config else { return }
         switch config {
         case .requestRide:
@@ -186,12 +203,30 @@ class RideActionView: UIView {
                 buttonActionConfig = .cancel
                 titleLabel.text = "Driver en route"
             }
+            infoViewLabel.text = String(user.fullname.first ?? "X")
+            typeOfUberLabel.text = user.fullname
         case .pickupPassenger:
-            break
+            titleLabel.text = "Arrived At Passenger Location"
+            buttonActionConfig = .pickup
         case .tripInProgress:
-            break
+            guard let user = user else { return }
+            switch user.accountType {
+            case .passenger:
+                buttonActionConfig = .getDirection
+            case .driver:
+                actionButton.setTitle("TRIP IN PROGRESS", for: .normal)
+                actionButton.isEnabled = false
+            }
+            titleLabel.text = "En Route To Destination"
         case .endTrip:
-            break
+            guard let user = user else { return }
+            switch user.accountType {
+            case .passenger:
+                buttonActionConfig = .dropOff
+            case .driver:
+                actionButton.setTitle("ARRIVED AT DESTINATION", for: .normal)
+                actionButton.isEnabled = false
+            }
         }
     }
 }
