@@ -12,7 +12,49 @@ protocol RideActionViewDelegate: AnyObject {
     func didComplete(_ rideActionView: RideActionView)
 }
 
+enum RideActionViewConfiguration {
+    case requestRide
+    case tripAccepted
+    case pickupPassenger
+    case tripInProgress
+    case endTrip
+    
+    init() {
+        self = .requestRide
+    }
+}
+
+enum RideActionButton: CustomStringConvertible {
+    case requestRide
+    case cancel
+    case setDirection
+    case pickup
+    case dropOff
+    
+    var description: String {
+        switch self {
+        case .requestRide:
+            return "CONFIRM UBERX"
+        case .cancel:
+            return "CANCEL"
+        case .setDirection:
+            return "GET DIRECTION"
+        case .pickup:
+            return "PICKUP PASSENGER"
+        case .dropOff:
+            return "DROP OFF PASSENGER"
+        }
+    }
+    
+    init() {
+        self = .requestRide
+    }
+}
+
 class RideActionView: UIView {
+    
+    var config = RideActionViewConfiguration()
+    var buttonAction = RideActionButton()
     
     var destination: MKPlacemark? {
         didSet {
@@ -118,5 +160,11 @@ class RideActionView: UIView {
     
     @objc private func buttonActionPressed() {
         delegate?.didComplete(self)
+    }
+    
+    //MARK: - Helper function
+    
+    func configureUI(withConfig config: RideActionViewConfiguration) {
+        
     }
 }
