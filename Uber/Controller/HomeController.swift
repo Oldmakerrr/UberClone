@@ -113,12 +113,21 @@ class HomeController: UIViewController {
     private func observeCurrentTrip() {
         Service.shared.observeCurrentTrip { trip in
             self.trip = trip
-            if trip.state == .accepted {
+            guard let driverUid = trip.drivarUid else { return }
+            switch trip.state {
+            case .requested:
+                break
+            case .accepted:
                 self.shouldPresentLoadingView(false)
-                guard let driverUid = trip.drivarUid else { return }
                 Service.shared.fetchUserData(uid: driverUid) { driver in
                     self.animateRideActionView(shouldShow: true, user: driver, withConfig: .tripAccepted)
                 }
+            case .driverArrived:
+                self.rideActionView.config = .driverArrived
+            case .inProgress:
+                break
+            case .completed:
+                break
             }
         }
     }
@@ -317,7 +326,10 @@ class HomeController: UIViewController {
         
         rideActionView.user = user
         rideActionView.destination = destination
-        rideActionView.configureUI(withConfig: config)
+        if let config = config {
+            rideActionView.config = config
+        }
+        
         
         let yOrigin = shouldShow ? self.view.frame.height - self.rideActionViewHeight : self.view.frame.height
         UIView.animate(withDuration: 0.3) {
@@ -438,6 +450,9 @@ extension HomeController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         print("DEBUG: Driver did enter passenger region..")
+        guard let trip = trip else { return }
+        self.rideActionView.config = .pickupPassenger
+        Service.shared.updateTripState(trip: trip, state: .driverArrived)
     }
     
     func enableLocationServices() {
@@ -577,6 +592,7 @@ extension HomeController: RideActionViewDelegate {
             self.centerMapOnuserLocation()
             self.actionButtonConfig = .showMenu
             self.actionButton.setBackgroundImage(UIImage(systemName: "list.bullet"), for: .normal)
+            self.rideActionView.config = .requestRide
             
             UIView.animate(withDuration: 0.3) {
                 self.locationInputActivationView.alpha = 1

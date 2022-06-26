@@ -16,6 +16,7 @@ protocol RideActionViewDelegate: AnyObject {
 enum RideActionViewConfiguration {
     case requestRide
     case tripAccepted
+    case driverArrived
     case pickupPassenger
     case tripInProgress
     case endTrip
@@ -54,7 +55,9 @@ enum RideActionButtonConfig: CustomStringConvertible {
 
 class RideActionView: UIView {
     
-    private var config = RideActionViewConfiguration()
+    var config = RideActionViewConfiguration() {
+        didSet { configureUI(withConfig: config)}
+    }
     private var buttonActionConfig = RideActionButtonConfig() {
         didSet{
             actionButton.setTitle(buttonActionConfig.description, for: .normal)
@@ -187,7 +190,7 @@ class RideActionView: UIView {
     
     //MARK: - Helper function
     
-    func configureUI(withConfig config: RideActionViewConfiguration?) {
+    private func configureUI(withConfig config: RideActionViewConfiguration?) {
         actionButton.isEnabled = true
         guard let config = config else { return }
         switch config {
@@ -206,6 +209,15 @@ class RideActionView: UIView {
             }
             infoViewLabel.text = String(user.fullname.first ?? "X")
             typeOfUberLabel.text = user.fullname
+        case .driverArrived:
+            guard let user = user else { return }
+            switch user.accountType {
+            case .passenger:
+                break
+            case .driver:
+                titleLabel.text = "Driver Has Arrived"
+                addressLabel.text = "Please meet driver at pickup location"
+            }
         case .pickupPassenger:
             titleLabel.text = "Arrived At Passenger Location"
             buttonActionConfig = .pickup
