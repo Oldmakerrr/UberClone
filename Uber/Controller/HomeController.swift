@@ -251,7 +251,7 @@ class HomeController: UIViewController {
         locationInputView.delegate = self
         locationInputView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: locationInputViewHeight)
         locationInputView.alpha = 0
-        UIView.animate(withDuration: 0.5) {
+        UIView.animate(withDuration: 0.3) {
             self.locationInputView.alpha = 1
         } completion: { _ in
             UIView.animate(withDuration: 0.2) {
@@ -330,6 +330,11 @@ class HomeController: UIViewController {
 //MARK: - MapView Helper Functions
 
 private extension HomeController {
+    
+    func setCustomRegion(withCoordinates coordinates: CLLocationCoordinate2D) {
+        let region = CLCircularRegion(center: coordinates, radius: 25, identifier: "pickup")
+        locationManager?.startMonitoring(for: region)
+    }
     
     func centerMapOnuserLocation() {
         guard let coordinate = locationManager?.location?.coordinate else { return }
@@ -423,11 +428,20 @@ extension HomeController: LocationInputViewDelegate {
     
 }
 
-//MARK: - LocationServices
+//MARK: - CLLocationManagerDelegate
 
-extension HomeController {
+extension HomeController: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+        print("DEBUG: Did start monitoring for rgion \(region)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        print("DEBUG: Driver did enter passenger region..")
+    }
     
     func enableLocationServices() {
+        locationManager?.delegate = self
         switch locationManager?.authorizationStatus {
         case .notDetermined:
             print("DEBUG: Not determined..")
@@ -507,7 +521,7 @@ extension HomeController: MKMapViewDelegate {
         guard let user = self.user,
                 user.accountType == .driver,
                 let location = userLocation.location else { return }
-        //Upload new driver location to fireBase
+        //Upload new current location to fireBase
         Service.shared.updateDriverLocation(loaction: location)
     }
     
@@ -563,6 +577,11 @@ extension HomeController: RideActionViewDelegate {
             self.centerMapOnuserLocation()
             self.actionButtonConfig = .showMenu
             self.actionButton.setBackgroundImage(UIImage(systemName: "list.bullet"), for: .normal)
+            
+            UIView.animate(withDuration: 0.3) {
+                self.locationInputActivationView.alpha = 1
+            }
+
         }
     }
     
@@ -578,6 +597,8 @@ extension HomeController: PickupControllerDelegate {
         annotation.coordinate = trip.pickupCoordinates
         mapView.addAnnotation(annotation)
         mapView.selectAnnotation(annotation, animated: true)
+        
+        setCustomRegion(withCoordinates: trip.pickupCoordinates)
         
         let placemark = MKPlacemark(coordinate: trip.pickupCoordinates)
         let mapItem = MKMapItem(placemark: placemark)
