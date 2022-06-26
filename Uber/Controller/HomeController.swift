@@ -331,6 +331,14 @@ class HomeController: UIViewController {
 
 private extension HomeController {
     
+    func centerMapOnuserLocation() {
+        guard let coordinate = locationManager?.location?.coordinate else { return }
+        let region = MKCoordinateRegion(center: coordinate,
+                                        latitudinalMeters: 2000,
+                                        longitudinalMeters: 2000)
+        mapView.setRegion(region, animated: true)
+    }
+    
     func zoomOnAnnotations() {
         let annotations = mapView.annotations.filter({ !$0.isKind(of: DriverAnnotation.self) })
         mapView.zoomToFit(annotations: annotations)
@@ -543,6 +551,10 @@ extension HomeController: RideActionViewDelegate {
                 print("DEBUG: Error deleting trip with: \(error.localizedDescription)")
             }
             self.animateRideActionView(shouldShow: false)
+            self.removeAnnotationsAndOverlays()
+            self.centerMapOnuserLocation()
+            self.actionButtonConfig = .showMenu
+            self.actionButton.setBackgroundImage(UIImage(systemName: "list.bullet"), for: .normal)
         }
     }
     
@@ -566,7 +578,8 @@ extension HomeController: PickupControllerDelegate {
         Service.shared.observeTripCancelled(trip: trip) {
             self.removeAnnotationsAndOverlays()
             self.animateRideActionView(shouldShow: false)
-            
+            self.centerMapOnuserLocation()
+            self.presentAlertControlle(withTitle: "Oops!", withMessage: "The passenger has decided to cancelled this ride.")
         }
         
         mapView.zoomToFit(annotations: mapView.annotations)
