@@ -503,6 +503,14 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
 
 extension HomeController: MKMapViewDelegate {
     
+    func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
+        guard let user = self.user,
+                user.accountType == .driver,
+                let location = userLocation.location else { return }
+        //Upload new driver location to fireBase
+        Service.shared.updateDriverLocation(loaction: location)
+    }
+    
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if let route = self.routes {
             let polyline = route.polyline
