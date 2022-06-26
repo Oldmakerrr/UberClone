@@ -9,7 +9,8 @@ import UIKit
 import MapKit
 
 protocol RideActionViewDelegate: AnyObject {
-    func didComplete(_ rideActionView: RideActionView)
+    func uploadTrip(_ rideActionView: RideActionView)
+    func cancelTrip(_ rideActionView: RideActionView)
 }
 
 enum RideActionViewConfiguration {
@@ -171,9 +172,9 @@ class RideActionView: UIView {
     @objc private func buttonActionPressed() {
         switch buttonActionConfig {
         case .requestRide:
-            delegate?.didComplete(self)
+            delegate?.uploadTrip(self)
         case .cancel:
-            print("DEBUG: Handle cancel..")
+            delegate?.cancelTrip(self)
         case .getDirection:
             print("DEBUG: Handle get directions..")
         case .pickup:

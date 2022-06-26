@@ -520,7 +520,7 @@ extension HomeController: MKMapViewDelegate {
 
 extension HomeController: RideActionViewDelegate {
     
-    func didComplete(_ rideActionView: RideActionView) {
+    func uploadTrip(_ rideActionView: RideActionView) {
         guard let pickupCoordinate = locationManager?.location?.coordinate,
         let destinationCoordinate = rideActionView.destination?.coordinate else { return }
         shouldPresentLoadingView(true, message: "Finding your a ride..")
@@ -534,6 +534,15 @@ extension HomeController: RideActionViewDelegate {
             } completion: { _ in
                 print("DEBUG: Did upload trip successfully")
             }
+        }
+    }
+    
+    func cancelTrip(_ rideActionView: RideActionView) {
+        Service.shared.cancelTrip { error, referance in
+            if let error = error {
+                print("DEBUG: Error deleting trip with: \(error.localizedDescription)")
+            }
+            self.animateRideActionView(shouldShow: false)
         }
     }
     
@@ -553,6 +562,12 @@ extension HomeController: PickupControllerDelegate {
         let placemark = MKPlacemark(coordinate: trip.pickupCoordinates)
         let mapItem = MKMapItem(placemark: placemark)
         generatePolyLine(forDestination: mapItem)
+        
+        Service.shared.observeTripCancelled(trip: trip) {
+            self.removeAnnotationsAndOverlays()
+            self.animateRideActionView(shouldShow: false)
+            
+        }
         
         mapView.zoomToFit(annotations: mapView.annotations)
         pickupController.dismiss(animated: true) {
