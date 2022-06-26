@@ -119,6 +119,8 @@ class HomeController: UIViewController {
                 break
             case .accepted:
                 self.shouldPresentLoadingView(false)
+                self.removeAnnotationsAndOverlays()
+                self.zoomForActiveTrip(withDriverUid: driverUid)
                 Service.shared.fetchUserData(uid: driverUid) { driver in
                     self.animateRideActionView(shouldShow: true, user: driver, withConfig: .tripAccepted)
                 }
@@ -145,6 +147,7 @@ class HomeController: UIViewController {
                     //move annotetion if it already exist on mapView
                     if driverAnnotaton.uid == driver.uid {
                         driverAnnotaton.updateAnnotationPosition(withCoordinate: coordinate)
+                        self.zoomForActiveTrip(withDriverUid: driver.uid)
                         return true
                     }
                     return false
@@ -342,6 +345,21 @@ class HomeController: UIViewController {
 //MARK: - MapView Helper Functions
 
 private extension HomeController {
+    
+    func zoomForActiveTrip(withDriverUid driverUid: String) {
+        var annotations = [MKAnnotation]()
+        self.mapView.annotations.forEach { annotation in
+            if let annotation = annotation as? DriverAnnotation {
+                if annotation.uid == driverUid {
+                    annotations.append(annotation)
+                }
+            }
+            if let userAnnotation = annotation as? MKUserLocation {
+                annotations.append(userAnnotation)
+            }
+        }
+        self.mapView.zoomToFit(annotations: annotations)
+    }
     
     func setCustomRegion(withCoordinates coordinates: CLLocationCoordinate2D) {
         let region = CLCircularRegion(center: coordinates, radius: 25, identifier: "pickup")

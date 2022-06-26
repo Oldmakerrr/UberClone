@@ -206,6 +206,7 @@ extension MKPlacemark {
 extension MKMapView {
     
     func zoomToFit(annotations: [MKAnnotation]) {
+        let bottomInset = UIScreen.main.bounds.height * 0.4
         var zoomRect = MKMapRect.null
         annotations.forEach { annotation in
             let annotationPoint = MKMapPoint(annotation.coordinate)
@@ -213,7 +214,7 @@ extension MKMapView {
                                       width: 0.01, height: 0.01)
             zoomRect = zoomRect.union(pointRect)
         }
-        let insets = UIEdgeInsets(top: 50, left: 50, bottom: 300, right: 50)
+        let insets = UIEdgeInsets(top: 50, left: 50, bottom: bottomInset + 50, right: 50)
         setVisibleMapRect(zoomRect, edgePadding: insets, animated: true)
     }
 }
