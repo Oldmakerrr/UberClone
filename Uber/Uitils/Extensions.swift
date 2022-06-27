@@ -217,6 +217,25 @@ extension MKMapView {
         let insets = UIEdgeInsets(top: 50, left: 50, bottom: bottomInset + 50, right: 50)
         setVisibleMapRect(zoomRect, edgePadding: insets, animated: true)
     }
+    
+    func addAndSelectAnnotation(forPlacemark placemark: MKPlacemark? = nil,
+                                forCoordinate coordinate: CLLocationCoordinate2D? = nil) {
+        
+        let annotation = MKPointAnnotation()
+        
+        if let placemark = placemark {
+            annotation.coordinate = placemark.coordinate
+            addAnnotation(annotation)
+            selectAnnotation(annotation, animated: true)
+        }
+        
+        if let coordinate = coordinate {
+            annotation.coordinate = coordinate
+            addAnnotation(annotation)
+            selectAnnotation(annotation, animated: true)
+        }
+    }
+    
 }
 
 
