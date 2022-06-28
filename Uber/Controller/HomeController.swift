@@ -20,6 +20,11 @@ private enum ButtonActionConfiguration {
     }
 }
 
+private enum AnnotationType: String {
+    case pickup
+    case destination
+}
+
 class HomeController: UIViewController {
     
     //MARK: - Properties
@@ -119,6 +124,8 @@ class HomeController: UIViewController {
             let placemark = MKPlacemark(coordinate: trip.destinationCoordinates)
             let mapItem = MKMapItem(placemark: placemark)
             self.generatePolyLine(forDestination: mapItem)
+            
+            self.setCustomRegion(withType: .destination, coordinates: trip.destinationCoordinates)
         }
     }
     
@@ -139,9 +146,14 @@ class HomeController: UIViewController {
             case .driverArrived:
                 self.rideActionView.config = .driverArrived
             case .inProgress:
-                break
+                self.rideActionView.config = .tripInProgress
+            case .arrivedAtDestination:
+                self.rideActionView.config = .endTrip
             case .completed:
-                break
+                self.animateRideActionView(shouldShow: false)
+                self.centerMapOnuserLocation()
+                self.configureActionButton(config: .showMenu)
+                self.presentAlertControlle(withTitle: "Trip completed", withMessage: "We hope you enjoyed your trip")
             }
         }
     }
@@ -373,8 +385,8 @@ private extension HomeController {
         self.mapView.zoomToFit(annotations: annotations)
     }
     
-    func setCustomRegion(withCoordinates coordinates: CLLocationCoordinate2D) {
-        let region = CLCircularRegion(center: coordinates, radius: 25, identifier: "pickup")
+    func setCustomRegion(withType type: AnnotationType, coordinates: CLLocationCoordinate2D) {
+        let region = CLCircularRegion(center: coordinates, radius: 25, identifier: type.rawValue)
         locationManager?.startMonitoring(for: region)
     }
     
@@ -475,14 +487,30 @@ extension HomeController: LocationInputViewDelegate {
 extension HomeController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
-        print("DEBUG: Did start monitoring for rgion \(region)")
+        switch region.identifier {
+        case AnnotationType.pickup.rawValue:
+            print("Did start monitoring pickup region \(region)")
+        case AnnotationType.destination.rawValue:
+            print("Did start monitoring destination region \(region)")
+        default:
+            return
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         print("DEBUG: Driver did enter passenger region..")
         guard let trip = trip else {  return }
-        Service.shared.updateTripState(trip: trip, state: .driverArrived) { error, reference in
-            self.rideActionView.config = .pickupPassenger
+        switch region.identifier {
+        case AnnotationType.pickup.rawValue:
+            Service.shared.updateTripState(trip: trip, state: .driverArrived) { error, reference in
+                self.rideActionView.config = .pickupPassenger
+            }
+        case AnnotationType.destination.rawValue:
+            Service.shared.updateTripState(trip: trip, state: .arrivedAtDestination) { error, reference in
+                self.rideActionView.config = .endTrip
+            }
+        default:
+            return
         }
     }
     
@@ -647,7 +675,7 @@ extension HomeController: PickupControllerDelegate {
 //        mapView.addAnnotation(annotation)
 //        mapView.selectAnnotation(annotation, animated: true)
         
-        setCustomRegion(withCoordinates: trip.pickupCoordinates)
+        setCustomRegion(withType: .pickup, coordinates: trip.pickupCoordinates)
         
         let placemark = MKPlacemark(coordinate: trip.pickupCoordinates)
         let mapItem = MKMapItem(placemark: placemark)
