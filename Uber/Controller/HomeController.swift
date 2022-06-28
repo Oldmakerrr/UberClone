@@ -489,9 +489,9 @@ extension HomeController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
         switch region.identifier {
         case AnnotationType.pickup.rawValue:
-            print("Did start monitoring pickup region \(region)")
+            print("DEBUG: Did start monitoring pickup region \(region)")
         case AnnotationType.destination.rawValue:
-            print("Did start monitoring destination region \(region)")
+            print("DEBUG: Did start monitoring destination region \(region)")
         default:
             return
         }
@@ -658,6 +658,16 @@ extension HomeController: RideActionViewDelegate {
                 self.locationInputActivationView.alpha = 1
             }
 
+        }
+    }
+    
+    func dropOffPassenger(_ rideActionView: RideActionView) {
+        guard let trip = trip else { return }
+        Service.shared.updateTripState(trip: trip, state: .completed) { error, reference in
+            self.removeAnnotationsAndOverlays()
+            self.centerMapOnuserLocation()
+            self.animateRideActionView(shouldShow: false)
+            
         }
     }
     
