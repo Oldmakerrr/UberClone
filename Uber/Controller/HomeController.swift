@@ -124,8 +124,8 @@ class HomeController: UIViewController {
             let placemark = MKPlacemark(coordinate: trip.destinationCoordinates)
             let mapItem = MKMapItem(placemark: placemark)
             self.generatePolyLine(forDestination: mapItem)
-            
             self.setCustomRegion(withType: .destination, coordinates: trip.destinationCoordinates)
+            self.mapView.zoomToFit(annotations: self.mapView.annotations)
         }
     }
     
@@ -150,10 +150,20 @@ class HomeController: UIViewController {
             case .arrivedAtDestination:
                 self.rideActionView.config = .endTrip
             case .completed:
-                self.animateRideActionView(shouldShow: false)
-                self.centerMapOnuserLocation()
-                self.configureActionButton(config: .showMenu)
-                self.presentAlertControlle(withTitle: "Trip completed", withMessage: "We hope you enjoyed your trip")
+                Service.shared.deleteTrip { error, reference in
+                    if let error = error {
+                        print("DEBUG: Failed to delete trip with error: \(error.localizedDescription)")
+                    }
+                    self.animateRideActionView(shouldShow: false)
+                    self.centerMapOnuserLocation()
+                    self.configureActionButton(config: .dismissActionView)
+                    self.presentAlertControlle(withTitle: "Trip completed", withMessage: "We hope you enjoyed your trip", handler:  { _ in
+                        UIView.animate(withDuration: 0.3) {
+                            self.locationInputActivationView.alpha = 1
+                        }
+                    })
+                    
+                }
             }
         }
     }
@@ -643,15 +653,14 @@ extension HomeController: RideActionViewDelegate {
     }
     
     func cancelTrip(_ rideActionView: RideActionView) {
-        Service.shared.cancelTrip { error, referance in
+        Service.shared.deleteTrip { error, referance in
             if let error = error {
                 print("DEBUG: Error deleting trip with: \(error.localizedDescription)")
             }
             self.animateRideActionView(shouldShow: false)
             self.removeAnnotationsAndOverlays()
             self.centerMapOnuserLocation()
-            self.actionButtonConfig = .showMenu
-            self.actionButton.setBackgroundImage(UIImage(systemName: "list.bullet"), for: .normal)
+            self.configureActionButton(config: .dismissActionView)
             self.rideActionView.config = .requestRide
             
             UIView.animate(withDuration: 0.3) {
@@ -680,11 +689,6 @@ extension HomeController: PickupControllerDelegate {
     func didAcceptTrip(_ pickupController: PickupController) {
         let trip = pickupController.trip
         mapView.addAndSelectAnnotation(forCoordinate: trip.pickupCoordinates)
-//        let annotation = MKPointAnnotation()
-//        annotation.coordinate = trip.pickupCoordinates
-//        mapView.addAnnotation(annotation)
-//        mapView.selectAnnotation(annotation, animated: true)
-        
         setCustomRegion(withType: .pickup, coordinates: trip.pickupCoordinates)
         
         let placemark = MKPlacemark(coordinate: trip.pickupCoordinates)

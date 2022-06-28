@@ -243,10 +243,10 @@ extension MKMapView {
 
 extension UIViewController {
     
-    func presentAlertControlle(withTitle title: String?, withMessage message: String?) {
+    func presentAlertControlle(withTitle title: String?, withMessage message: String?, completion: (()-> Void)? = nil, handler:((UIAlertAction)->Void)? = nil){
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: .cancel))
-        present(alert, animated: true)
+        alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: handler))
+        present(alert, animated: true, completion: completion)
     }
     
     func shouldPresentLoadingView(_ present: Bool, message: String? = nil) {

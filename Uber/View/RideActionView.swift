@@ -231,6 +231,7 @@ class RideActionView: UIView {
             case .driver:
                 actionButton.setTitle("TRIP IN PROGRESS", for: .normal)
                 actionButton.isEnabled = false
+                addressLabel.text = ""
             }
             titleLabel.text = "En Route To Destination"
         case .endTrip:
@@ -242,6 +243,7 @@ class RideActionView: UIView {
                 actionButton.setTitle("ARRIVED AT DESTINATION", for: .normal)
                 actionButton.isEnabled = false
             }
+            titleLabel.text = "You Have Arrived"
         }
     }
 }

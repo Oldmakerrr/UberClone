@@ -100,7 +100,7 @@ struct Service {
 
     }
     
-    func cancelTrip(completion: @escaping(Error?, DatabaseReference) -> Void) {
+    func deleteTrip(completion: @escaping(Error?, DatabaseReference) -> Void) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         REF_TRIPS.child(uid).removeValue(completionBlock: completion)
     }
@@ -114,5 +114,8 @@ struct Service {
     func updateTripState(trip: Trip, state: TripState,
                          completion: @escaping(Error?, DatabaseReference) -> Void) {
         REF_TRIPS.child(trip.passangerUid).child("state").setValue(state.rawValue, withCompletionBlock: completion)
+        if state == .completed {
+            REF_TRIPS.child(trip.passangerUid).removeAllObservers()
+        }
     }
 }
