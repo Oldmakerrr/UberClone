@@ -15,6 +15,8 @@ class ContainerController: UIViewController {
     private var homeController: HomeController!
     private var menuController: MenuController!
     
+    private let blackView = UIView()
+    
     private var isExpanded = false
     
     private var user: User? {
@@ -38,7 +40,20 @@ class ContainerController: UIViewController {
         print("DEBUG: WIDTH = \(UIScreen.main.bounds.width)")
     }
     
+    override var prefersStatusBarHidden: Bool {
+        return isExpanded
+    }
+    
+    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        return .slide
+    }
+    
     //MARK: - Selectors
+    
+    @objc private func dismissMenu() {
+        isExpanded = false
+        animateMenu(shouldExpand: isExpanded)
+    }
     
     //MARK: - API
     
@@ -94,20 +109,46 @@ class ContainerController: UIViewController {
         menuController.didMove(toParent: self)
         view.insertSubview(menuController.view, at: 0)
         menuController.view.frame = view.frame
+        configureBlackView()
+    }
+    
+    private func configureBlackView() {
+        view.addSubview(blackView)
+        blackView.frame = view.bounds
+        blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        blackView.alpha = 0
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissMenu))
+        blackView.addGestureRecognizer(tap)
     }
     
     private func animateMenu(shouldExpand: Bool, completion: ((Bool)->Void)? = nil) {
+        let inset = UIScreen.main.bounds.width * 0.25
         var origin: CGFloat
+        var blackViewAlpha: CGFloat
         if shouldExpand {
-            let inset = UIScreen.main.bounds.width * 0.25
             origin = self.view.frame.width - inset
+            blackViewAlpha = 1
         } else {
             origin = 0
+            blackViewAlpha = 0
         }
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut, animations: {
+            self.blackView.frame.origin.x = origin
             self.homeController.view.frame.origin.x = origin
+            self.blackView.alpha = blackViewAlpha
         }, completion: completion)
+        
+        animateStatusBar()
     }
+    
+    private func animateStatusBar() {
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut) {
+            self.setNeedsStatusBarAppearanceUpdate()
+        }
+
+    }
+    
+    //MARK: - Menu Options Functions
     
     private func logOut() {
         let alert = UIAlertController(title: nil,
