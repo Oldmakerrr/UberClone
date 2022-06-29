@@ -11,12 +11,7 @@ class MenuHeader: UIView {
     
     //MARK: - Properties
     
-    var user: User? {
-        didSet {
-            fullNameLabel.text = user?.fullname
-            emailLabel.text = user?.email
-        }
-    }
+   private let user: User
     
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
@@ -42,9 +37,12 @@ class MenuHeader: UIView {
     
     //MARK: - Lifecycle
     
-    override init(frame: CGRect) {
+    init(frame: CGRect, user: User) {
+        self.user = user
         super.init(frame: frame)
         backgroundColor = .backGroundColor
+        fullNameLabel.text = user.fullname
+        emailLabel.text = user.email
         setupView()
     }
     

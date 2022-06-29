@@ -12,15 +12,17 @@ class ContainerController: UIViewController {
     
     //MARK: - Properties
     
-    private let homeController = HomeController()
-    private let menuController = MenuController()
+    private var homeController: HomeController!
+    private var menuController: MenuController!
     
     private var isExpanded = false
     
     private var user: User? {
         didSet {
-            homeController.user = user
-            menuController.user = user
+            guard let user = user else { return }
+            configureHomeController(withUser: user)
+            configureMenuController(withUser: user)
+            shouldPresentLoadingView(false)
         }
     }
     
@@ -29,9 +31,8 @@ class ContainerController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .backGroundColor
-        configureHomeController()
-        configureMenuController()
         fetchCurrentUserData()
+        shouldPresentLoadingView(true, message: "Loading User Data..")
         
         print("DEBUG: HEIGHT = \(UIScreen.main.bounds.height)")
         print("DEBUG: WIDTH = \(UIScreen.main.bounds.width)")
@@ -41,16 +42,43 @@ class ContainerController: UIViewController {
     
     //MARK: - API
     
-    private func fetchCurrentUserData() {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
+    func fetchCurrentUserData() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            DispatchQueue.main.async {
+                self.goToLoginController()
+            }
+            return
+        }
         Service.shared.fetchUserData(uid: uid) { user in
             self.user = user
         }
     }
     
+    private func signOut() {
+        do {
+            try Auth.auth().signOut()
+            DispatchQueue.main.async {
+                self.goToLoginController()
+            }
+            print("DEBUG: Succesfully sign out")
+        } catch let error {
+            print("DEBUG: Erorr signing out \(error.localizedDescription)")
+        }
+    }
+    
+    //MARK: - Navigation function
+    
+    private func goToLoginController() {
+        let loginController = LoginController()
+        let navigationController = UINavigationController(rootViewController: loginController)
+        navigationController.modalPresentationStyle = .overFullScreen
+        present(navigationController, animated: true)
+    }
+    
     //MARK: - Helper Functions
     
-    private func configureHomeController() {
+    private func configureHomeController(withUser user: User) {
+        homeController = HomeController(user: user)
         homeController.delegate = self
         addChild(homeController)
         homeController.didMove(toParent: self)
@@ -59,7 +87,8 @@ class ContainerController: UIViewController {
         
     }
     
-    private func configureMenuController() {
+    private func configureMenuController(withUser user: User) {
+        menuController = MenuController(user: user)
         addChild(menuController)
         menuController.didMove(toParent: self)
         view.insertSubview(menuController.view, at: 0)

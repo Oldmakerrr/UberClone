@@ -127,8 +127,8 @@ class SignUpViewController: UIViewController {
             print("DEBUG: Successfuly save data..")
             DispatchQueue.main.async {
                 let keyWindow = UIApplication.shared.windows.filter {$0.isKeyWindow}.first
-                if let homeController = keyWindow?.rootViewController as? HomeController {
-                    homeController.configure()
+                if let homeController = keyWindow?.rootViewController as? ContainerController {
+                    homeController.fetchCurrentUserData()
                 }
             }
             self.dismiss(animated: true)

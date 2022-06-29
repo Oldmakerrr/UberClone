@@ -15,9 +15,7 @@ class MenuController: UIViewController {
     
     private let tableView = UITableView()
     
-    var user: User? {
-        didSet { menuHeader.user = user }
-    }
+    private let user: User
     
     private lazy var menuHeader: MenuHeader = {
         let inset = UIScreen.main.bounds.width * 0.25
@@ -25,11 +23,20 @@ class MenuController: UIViewController {
                            y: 0,
                            width: self.view.frame.width - inset,
                            height: UIScreen.main.bounds.height * 0.21)
-        let view = MenuHeader(frame: frame)
+        let view = MenuHeader(frame: frame, user: user)
         return view
     }()
     
     //MARK: - Lifecycle
+    
+    init(user: User) {
+        self.user = user
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

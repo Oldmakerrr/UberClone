@@ -67,24 +67,10 @@ class HomeController: UIViewController {
     
     //MARK: Model
     
-    var user: User? {
-        didSet {
-            locationInputView.user = user
-            guard let accountType = user?.accountType else { return }
-            switch accountType {
-            case .passenger:
-                fetchDrivers()
-                configureLocationInputActivationView()
-                observeCurrentTrip()
-            case .driver:
-                observeTrips()
-            }
-        }
-    }
+    let user: User
     
     private var trip: Trip? {
         didSet {
-            guard let user = user else { return }
             switch user.accountType {
             case .passenger:
                 print("DEBUG: Your trip load..")
@@ -97,11 +83,20 @@ class HomeController: UIViewController {
     
     //MARK: - Lifecycle
     
+    init(user: User) {
+        self.user = user
+        super.init(nibName: nil, bundle: nil)
+        locationInputView.user = user
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        checkIfUserIsLoggedIn()
+        configure()
         enableLocationServices()
-       // signOut()
     }
     
     //MARK: - Selectors
@@ -224,41 +219,7 @@ class HomeController: UIViewController {
         }
     }
     
-    //MARK: Shared API
-    
-    private func checkIfUserIsLoggedIn() {
-        if let uid = Auth.auth().currentUser?.uid {
-            print("DEBUG: user id is \(uid)")
-            configure()
-        } else {
-            DispatchQueue.main.async {
-                self.goToLoginController()
-                print("DEBUG: user is not logged on")
-            }
-            
-        }
-    }
-    
-    private func signOut() {
-        do {
-            try Auth.auth().signOut()
-            DispatchQueue.main.async {
-                self.goToLoginController()
-            }
-            print("DEBUG: Succesfully sign out")
-        } catch let error {
-            print("DEBUG: Erorr signing out \(error.localizedDescription)")
-        }
-    }
-    
 //MARK: - Navigation function
-    
-    private func goToLoginController() {
-        let loginController = LoginController()
-        let navigationController = UINavigationController(rootViewController: loginController)
-        navigationController.modalPresentationStyle = .overFullScreen
-        present(navigationController, animated: true)
-    }
     
     private func goToPickupController(trip: Trip) {
         let pickupController = PickupController(trip: trip)
@@ -269,8 +230,20 @@ class HomeController: UIViewController {
     
 //MARK: - Helper function
     
-    func configure() {
+    private func configure() {
         configureUI()
+        checkAccountTypeUser()
+    }
+    
+    private func checkAccountTypeUser() {
+        switch user.accountType {
+        case .passenger:
+            fetchDrivers()
+            configureLocationInputActivationView()
+            observeCurrentTrip()
+        case .driver:
+            observeTrips()
+        }
     }
     
     private func configureUI() {
@@ -620,8 +593,7 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
 extension HomeController: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
-        guard let user = self.user,
-                user.accountType == .driver,
+        guard user.accountType == .driver,
                 let location = userLocation.location else { return }
         //Upload new current location to fireBase
         DriverService.shared.updateDriverLocation(loaction: location)
