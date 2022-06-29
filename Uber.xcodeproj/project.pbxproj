@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		18028654286C24DC00B61C69 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18028653286C24DC00B61C69 /* MenuController.swift */; };
 		18028656286C24F800B61C69 /* ContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18028655286C24F800B61C69 /* ContainerController.swift */; };
+		18028658286C377200B61C69 /* MenuHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18028657286C377200B61C69 /* MenuHeader.swift */; };
 		180C1B8B28528D590018D0DA /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180C1B8A28528D590018D0DA /* SignUpViewController.swift */; };
 		180C1B8D28545C7F0018D0DA /* AuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180C1B8C28545C7F0018D0DA /* AuthButton.swift */; };
 		186E00552839254F006E86E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186E00542839254F006E86E9 /* AppDelegate.swift */; };
@@ -37,6 +38,7 @@
 		1478090D45541C8C55AE0AE0 /* Pods_Uber.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Uber.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		18028653286C24DC00B61C69 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
 		18028655286C24F800B61C69 /* ContainerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerController.swift; sourceTree = "<group>"; };
+		18028657286C377200B61C69 /* MenuHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuHeader.swift; sourceTree = "<group>"; };
 		180C1B8A28528D590018D0DA /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		180C1B8C28545C7F0018D0DA /* AuthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthButton.swift; sourceTree = "<group>"; };
 		186E00512839254F006E86E9 /* Uber.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Uber.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,8 +88,8 @@
 		18247F55286C220100A0D130 /* SideMenu */ = {
 			isa = PBXGroup;
 			children = (
-				18028653286C24DC00B61C69 /* MenuController.swift */,
 				18028655286C24F800B61C69 /* ContainerController.swift */,
+				18028653286C24DC00B61C69 /* MenuController.swift */,
 			);
 			path = SideMenu;
 			sourceTree = "<group>";
@@ -164,6 +166,7 @@
 				187EC8132857409E00C65FA7 /* LocationCell.swift */,
 				18C975652856493B001A6848 /* LocationInputView.swift */,
 				18C97563285626C5001A6848 /* LocationInputActivationView.swift */,
+				18028657286C377200B61C69 /* MenuHeader.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 				18028654286C24DC00B61C69 /* MenuController.swift in Sources */,
 				187EC81A2857B73A00C65FA7 /* LocationHandler.swift in Sources */,
 				18028656286C24F800B61C69 /* ContainerController.swift in Sources */,
+				18028658286C377200B61C69 /* MenuHeader.swift in Sources */,
 				186E00572839254F006E86E9 /* SceneDelegate.swift in Sources */,
 				187A774D28635FEA00DEF391 /* RideActionView.swift in Sources */,
 				187EC81828579D1800C65FA7 /* User.swift in Sources */,

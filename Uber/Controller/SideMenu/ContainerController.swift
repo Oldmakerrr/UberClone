@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ContainerController: UITableViewController {
+class ContainerController: UIViewController {
     
     //MARK: - Properties
     
@@ -20,6 +20,7 @@ class ContainerController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .backGroundColor
         configureHomeController()
         configureMenuController()
         
@@ -44,6 +45,7 @@ class ContainerController: UITableViewController {
         addChild(menuController)
         menuController.didMove(toParent: self)
         view.insertSubview(menuController.view, at: 0)
+        menuController.view.frame = view.frame
     }
     
     private func animateMenu(shouldExpand: Bool) {
