@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 class ContainerController: UIViewController {
     
@@ -16,6 +17,13 @@ class ContainerController: UIViewController {
     
     private var isExpanded = false
     
+    private var user: User? {
+        didSet {
+            homeController.user = user
+            menuController.user = user
+        }
+    }
+    
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -23,12 +31,22 @@ class ContainerController: UIViewController {
         view.backgroundColor = .backGroundColor
         configureHomeController()
         configureMenuController()
+        fetchCurrentUserData()
         
         print("DEBUG: HEIGHT = \(UIScreen.main.bounds.height)")
         print("DEBUG: WIDTH = \(UIScreen.main.bounds.width)")
     }
     
     //MARK: - Selectors
+    
+    //MARK: - API
+    
+    private func fetchCurrentUserData() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        Service.shared.fetchUserData(uid: uid) { user in
+            self.user = user
+        }
+    }
     
     //MARK: - Helper Functions
     

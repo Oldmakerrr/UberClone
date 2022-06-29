@@ -9,9 +9,15 @@ import UIKit
 
 let reuseIdentifier = "MenuControllerCell"
 
-class MenuController: UITableViewController {
+class MenuController: UIViewController {
     
     //MARK: - Properties
+    
+    private let tableView = UITableView()
+    
+    var user: User? {
+        didSet { menuHeader.user = user }
+    }
     
     private lazy var menuHeader: MenuHeader = {
         let inset = UIScreen.main.bounds.width * 0.25
@@ -27,7 +33,7 @@ class MenuController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .backGroundColor
         configureTableView()
     }
     
@@ -36,23 +42,28 @@ class MenuController: UITableViewController {
     //MARK: - Helper Functions
     
     func configureTableView() {
+        view.addSubview(tableView)
+        tableView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
+                         bottom: view.bottomAnchor, right: view.rightAnchor)
         tableView.backgroundColor = .white
         tableView.separatorStyle = .none
         tableView.isScrollEnabled = false
         tableView.rowHeight = 60
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: reuseIdentifier)
         tableView.tableHeaderView = menuHeader
+        tableView.delegate = self
+        tableView.dataSource = self
     }
 }
 
 
-extension MenuController {
+extension MenuController: UITableViewDataSource {
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 3
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
         var content = cell.defaultContentConfiguration()
         content.text = "Menu Options"
@@ -60,4 +71,8 @@ extension MenuController {
         cell.contentConfiguration = content
         return cell
     }
+}
+
+extension MenuController: UITableViewDelegate {
+    
 }
