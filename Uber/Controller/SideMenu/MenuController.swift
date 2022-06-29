@@ -47,7 +47,7 @@ class MenuController: UIViewController {
                            y: 0,
                            width: self.view.frame.width - inset,
                            height: UIScreen.main.bounds.height * 0.21)
-        let view = MenuHeader(frame: frame, user: user)
+        let view = MenuHeader(frame: frame, user: user, style: .black)
         return view
     }()
     

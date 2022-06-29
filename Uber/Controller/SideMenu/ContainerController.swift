@@ -166,6 +166,14 @@ class ContainerController: UIViewController {
         self.present(alert, animated: true)
     }
     
+    private func settings() {
+        guard let user = user else { return }
+        let settingsController = SettingsController(user: user)
+        let navigationController = UINavigationController(rootViewController: settingsController)
+        navigationController.modalPresentationStyle = .overFullScreen
+        present(navigationController, animated: true)
+    }
+    
 }
 
 //MARK: - HomeControllerDelegate
@@ -190,7 +198,7 @@ extension ContainerController: MenuControllerDelegate {
             case .yourTrips:
                 break
             case .settings:
-                break
+                self.settings()
             case .logout:
                 self.logOut()
             }

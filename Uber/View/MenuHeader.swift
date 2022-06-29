@@ -7,6 +7,11 @@
 
 import UIKit
 
+enum MenuHeaderStyle {
+    case white
+    case black
+}
+
 class MenuHeader: UIView {
     
     //MARK: - Properties
@@ -22,8 +27,7 @@ class MenuHeader: UIView {
     private let fullNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
-        label.textColor = .white
-        label.text = "Full name"
+        
         return label
     }()
     
@@ -31,19 +35,25 @@ class MenuHeader: UIView {
         let label = UILabel()
         label.textColor = .lightGray
         label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "test@gmail.com"
         return label
     }()
     
     //MARK: - Lifecycle
     
-    init(frame: CGRect, user: User) {
+    init(frame: CGRect = .zero, user: User, style: MenuHeaderStyle) {
         self.user = user
         super.init(frame: frame)
-        backgroundColor = .backGroundColor
         fullNameLabel.text = user.fullname
         emailLabel.text = user.email
         setupView()
+        switch style {
+        case .white:
+            backgroundColor = .white
+            fullNameLabel.textColor = .black
+        case .black:
+            backgroundColor = .backGroundColor
+            fullNameLabel.textColor = .white
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -55,7 +65,7 @@ class MenuHeader: UIView {
     private func setupView() {
         addSubview(profileImageView)
         profileImageView.anchor(top: topAnchor, left: leftAnchor,
-                                paddingTop: 4, paddingLeft: 12  ,
+                                paddingTop: 12, paddingLeft: 12  ,
                                 width: 64, height: 64)
         profileImageView.layer.cornerRadius = 64 / 2
         
