@@ -7,13 +7,31 @@
 
 import UIKit
 
-let reuseIdentifier = "MenuControllerCell"
+private enum MenuOptions: Int, CaseIterable, CustomStringConvertible {
+    
+    case yourTrips
+    case settings
+    case logout
+    
+    var description: String {
+        switch self {
+        case .yourTrips:
+            return "Your Trips"
+        case .settings:
+            return "Settings"
+        case .logout:
+            return "Log Out"
+        }
+    }
+}
 
 class MenuController: UIViewController {
     
     //MARK: - Properties
     
     private let tableView = UITableView()
+    
+    private let cellReuseIdentifier = "MenuControllerCell"
     
     private let user: User
     
@@ -56,7 +74,7 @@ class MenuController: UIViewController {
         tableView.separatorStyle = .none
         tableView.isScrollEnabled = false
         tableView.rowHeight = 60
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: reuseIdentifier)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellReuseIdentifier)
         tableView.tableHeaderView = menuHeader
         tableView.delegate = self
         tableView.dataSource = self
@@ -67,13 +85,14 @@ class MenuController: UIViewController {
 extension MenuController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return MenuOptions.allCases.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
+        guard let option = MenuOptions(rawValue: indexPath.row) else { return cell }
         var content = cell.defaultContentConfiguration()
-        content.text = "Menu Options"
+        content.text = option.description
         content.textProperties.font = UIFont.systemFont(ofSize: 20)
         cell.contentConfiguration = content
         return cell
