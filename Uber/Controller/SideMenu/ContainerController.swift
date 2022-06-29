@@ -89,26 +89,45 @@ class ContainerController: UIViewController {
     
     private func configureMenuController(withUser user: User) {
         menuController = MenuController(user: user)
+        menuController.delegate = self
         addChild(menuController)
         menuController.didMove(toParent: self)
         view.insertSubview(menuController.view, at: 0)
         menuController.view.frame = view.frame
     }
     
-    private func animateMenu(shouldExpand: Bool) {
+    private func animateMenu(shouldExpand: Bool, completion: ((Bool)->Void)? = nil) {
+        var origin: CGFloat
         if shouldExpand {
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut) {
-                let inset = UIScreen.main.bounds.width * 0.25
-                self.homeController.view.frame.origin.x = self.view.frame.width - inset
-            }
+            let inset = UIScreen.main.bounds.width * 0.25
+            origin = self.view.frame.width - inset
         } else {
-            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut) {
-                self.homeController.view.frame.origin.x = 0
-            }
+            origin = 0
         }
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .curveEaseInOut, animations: {
+            self.homeController.view.frame.origin.x = origin
+        }, completion: completion)
     }
+    
+    private func logOut() {
+        let alert = UIAlertController(title: nil,
+                                      message: "Are you sure you want to log out?",
+                                      preferredStyle: .actionSheet)
+        let actionLogout = UIAlertAction(title: "Log Out", style: .destructive) { _ in
+            self.view.subviews.forEach{ view in
+                view.removeFromSuperview()
+            }
+            self.signOut()
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel)
+        alert.addAction(actionLogout)
+        alert.addAction(cancel)
+        self.present(alert, animated: true)
+    }
+    
 }
 
+//MARK: - HomeControllerDelegate
 
 extension ContainerController: HomeControllerDelegate {
     
@@ -117,5 +136,24 @@ extension ContainerController: HomeControllerDelegate {
         animateMenu(shouldExpand: isExpanded)
     }
     
+}
+
+//MARK: - MenuControllerDelegate
+
+extension ContainerController: MenuControllerDelegate {
+    
+    func didSelect(option: MenuOptions) {
+        isExpanded.toggle()
+        animateMenu(shouldExpand: isExpanded) { _ in
+            switch option {
+            case .yourTrips:
+                break
+            case .settings:
+                break
+            case .logout:
+                self.logOut()
+            }
+        }
+    }
     
 }

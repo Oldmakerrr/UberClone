@@ -7,7 +7,7 @@
 
 import UIKit
 
-private enum MenuOptions: Int, CaseIterable, CustomStringConvertible {
+enum MenuOptions: Int, CaseIterable, CustomStringConvertible {
     
     case yourTrips
     case settings
@@ -25,9 +25,15 @@ private enum MenuOptions: Int, CaseIterable, CustomStringConvertible {
     }
 }
 
+protocol MenuControllerDelegate: AnyObject {
+    func didSelect(option: MenuOptions)
+}
+
 class MenuController: UIViewController {
     
     //MARK: - Properties
+    
+    weak var delegate: MenuControllerDelegate?
     
     private let tableView = UITableView()
     
@@ -100,5 +106,10 @@ extension MenuController: UITableViewDataSource {
 }
 
 extension MenuController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let option = MenuOptions(rawValue: indexPath.row) else { return }
+        delegate?.didSelect(option: option)
+    }
     
 }
