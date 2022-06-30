@@ -38,9 +38,10 @@ class SettingsController: UITableViewController {
     
     private let user: User
     
-    lazy var frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 64)
-    
+    private lazy var frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 64)
     private lazy var userInfoHeader = MenuHeader(frame: frame, user: user, style: .white)
+    
+    private let locationManager = LocationHandler.shared.locationManager
     
     //MARK: - Lifecycle
     
@@ -75,6 +76,7 @@ class SettingsController: UITableViewController {
         tableView.tableHeaderView = userInfoHeader
         tableView.rowHeight = 60
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "identifier")
+        tableView.tableFooterView = UIView()
     }
     
     private func configureNavigationBar() {
@@ -147,5 +149,12 @@ extension SettingsController {
 //MARK: - UITableViewDelegate
 
 extension SettingsController {
-    
+     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let type = LocationType(rawValue: indexPath.row),
+              let location = locationManager?.location else { return }
+        let addLocationController = AddLocationController(type: type, location: location)
+        let navigationController = UINavigationController(rootViewController: addLocationController)
+        present(navigationController, animated: true)
+    }
 }

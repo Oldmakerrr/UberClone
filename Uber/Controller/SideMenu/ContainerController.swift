@@ -170,7 +170,6 @@ class ContainerController: UIViewController {
         guard let user = user else { return }
         let settingsController = SettingsController(user: user)
         let navigationController = UINavigationController(rootViewController: settingsController)
-        navigationController.modalPresentationStyle = .overFullScreen
         present(navigationController, animated: true)
     }
     

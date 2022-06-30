@@ -11,6 +11,7 @@
 		18028656286C24F800B61C69 /* ContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18028655286C24F800B61C69 /* ContainerController.swift */; };
 		18028658286C377200B61C69 /* MenuHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18028657286C377200B61C69 /* MenuHeader.swift */; };
 		1802865A286CAE4C00B61C69 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18028659286CAE4C00B61C69 /* SettingsController.swift */; };
+		1802865F286D763400B61C69 /* AddLocationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1802865E286D763400B61C69 /* AddLocationController.swift */; };
 		180C1B8B28528D590018D0DA /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180C1B8A28528D590018D0DA /* SignUpViewController.swift */; };
 		180C1B8D28545C7F0018D0DA /* AuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180C1B8C28545C7F0018D0DA /* AuthButton.swift */; };
 		186E00552839254F006E86E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186E00542839254F006E86E9 /* AppDelegate.swift */; };
@@ -41,6 +42,7 @@
 		18028655286C24F800B61C69 /* ContainerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerController.swift; sourceTree = "<group>"; };
 		18028657286C377200B61C69 /* MenuHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuHeader.swift; sourceTree = "<group>"; };
 		18028659286CAE4C00B61C69 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
+		1802865E286D763400B61C69 /* AddLocationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLocationController.swift; sourceTree = "<group>"; };
 		180C1B8A28528D590018D0DA /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		180C1B8C28545C7F0018D0DA /* AuthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthButton.swift; sourceTree = "<group>"; };
 		186E00512839254F006E86E9 /* Uber.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Uber.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +80,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1802865D286D75EF00B61C69 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				18028659286CAE4C00B61C69 /* SettingsController.swift */,
+				1802865E286D763400B61C69 /* AddLocationController.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		18247F54286C21D600A0D130 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
@@ -156,7 +167,7 @@
 				18247F54286C21D600A0D130 /* Authentication */,
 				18C975612855FF97001A6848 /* HomeController.swift */,
 				187A7752286642BD00DEF391 /* PickupController.swift */,
-				18028659286CAE4C00B61C69 /* SettingsController.swift */,
+				1802865D286D75EF00B61C69 /* Settings */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -315,6 +326,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1802865F286D763400B61C69 /* AddLocationController.swift in Sources */,
 				186E007328392F42006E86E9 /* Extensions.swift in Sources */,
 				180C1B8D28545C7F0018D0DA /* AuthButton.swift in Sources */,
 				18C975622855FF97001A6848 /* HomeController.swift in Sources */,
