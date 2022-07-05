@@ -8,9 +8,15 @@
 import UIKit
 import MapKit
 
+protocol AddLocationControllerDelegate: AnyObject {
+    func updateLocation(location: String, type: LocationType)
+}
+
 class AddLocationController: UITableViewController {
     
     //MARK: - Properties
+    
+    weak var delegate: AddLocationControllerDelegate?
     
     private final let reuseIdentifier = "AddLocationControllerCell"
     
@@ -95,6 +101,15 @@ extension AddLocationController {
         content.secondaryTextProperties.color = .lightGray
         cell.contentConfiguration = content
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let searchResult = searchResults[indexPath.row]
+        let title = searchResult.title
+        let subTitle = searchResult.subtitle
+        let locationString = title + " " + subTitle
+        let trimmedLocationString = locationString.replacingOccurrences(of: ", Соединённые Штаты Америки", with: "")
+        delegate?.updateLocation(location: trimmedLocationString, type: type)
     }
 }
 

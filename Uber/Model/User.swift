@@ -19,6 +19,8 @@ struct User {
     let email: String
     let accountType: AccountType
     var location: CLLocation?
+    var homeLocation: String?
+    var workLocation: String?
     
     init(uid: String, dictionary: [String: Any]) throws {
         self.uid = uid
@@ -36,6 +38,12 @@ struct User {
             self.accountType = accountType
         } else {
             throw Err(message: "create User failed: accountType not found")
+        }
+        if let homeLocation = dictionary[LocationType.home.description] as? String {
+            self.homeLocation = homeLocation
+        }
+        if let workLocation = dictionary[LocationType.work.description] as? String {
+            self.workLocation = workLocation
         }
     }
 }

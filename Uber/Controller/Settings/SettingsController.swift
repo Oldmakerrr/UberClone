@@ -34,9 +34,7 @@ class SettingsController: UITableViewController {
     
     //MARK: - Properties
     
-   // private let tableView = UITableView()
-    
-    private let user: User
+    private var user: User
     
     private lazy var frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 64)
     private lazy var userInfoHeader = MenuHeader(frame: frame, user: user, style: .white)
@@ -106,6 +104,15 @@ class SettingsController: UITableViewController {
         
     }
     
+    func locationText(forType type: LocationType) -> String {
+        switch type {
+        case .home:
+            return user.homeLocation ?? type.subTitle
+        case .work:
+            return user.workLocation ?? type.subTitle
+        }
+    }
+    
 }
 
 //MARK: - UITableViewDataSource
@@ -135,10 +142,10 @@ extension SettingsController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "identifier", for: indexPath)
-        guard let location = LocationType(rawValue: indexPath.row) else { return cell }
+        guard let type = LocationType(rawValue: indexPath.row) else { return cell }
         var content = cell.defaultContentConfiguration()
-        content.text = location.description
-        content.secondaryText = location.subTitle
+        content.text = type.description
+        content.secondaryText = locationText(forType: type)
         content.textProperties.font = UIFont.systemFont(ofSize: 18)
         content.secondaryTextProperties.color = .lightGray
         cell.contentConfiguration = content
@@ -154,7 +161,26 @@ extension SettingsController {
         guard let type = LocationType(rawValue: indexPath.row),
               let location = locationManager?.location else { return }
         let addLocationController = AddLocationController(type: type, location: location)
+        addLocationController.delegate = self
         let navigationController = UINavigationController(rootViewController: addLocationController)
         present(navigationController, animated: true)
+    }
+}
+
+//MARK: - AddLocationControllerDelegate
+
+extension SettingsController: AddLocationControllerDelegate {
+    
+    func updateLocation(location: String, type: LocationType) {
+        PassengerService.shared.saveLocation(location: location, type: type) { error, reference in
+            self.dismiss(animated: true)
+            switch type {
+            case .home:
+                self.user.homeLocation = location
+            case .work:
+                self.user.workLocation = location
+            }
+            self.tableView.reloadData()
+        }
     }
 }
