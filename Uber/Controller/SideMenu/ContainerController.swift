@@ -12,8 +12,8 @@ class ContainerController: UIViewController {
     
     //MARK: - Properties
     
-    private var homeController: HomeController!
-    private var menuController: MenuController!
+    private var homeController = HomeController()
+    private var menuController: MenuController?
     
     private let blackView = UIView()
     
@@ -22,9 +22,8 @@ class ContainerController: UIViewController {
     private var user: User? {
         didSet {
             guard let user = user else { return }
-            configureHomeController(withUser: user)
-            configureMenuController(withUser: user)
-            shouldPresentLoadingView(false)
+            homeController.user = user
+            print("DEBUG: User data update..")
         }
     }
     
@@ -66,6 +65,9 @@ class ContainerController: UIViewController {
         }
         Service.shared.fetchUserData(uid: uid) { user in
             self.user = user
+            self.configureHomeController(withUser: user)
+            self.configureMenuController(withUser: user)
+            self.shouldPresentLoadingView(false)
         }
     }
     
@@ -93,7 +95,6 @@ class ContainerController: UIViewController {
     //MARK: - Helper Functions
     
     private func configureHomeController(withUser user: User) {
-        homeController = HomeController(user: user)
         homeController.delegate = self
         addChild(homeController)
         homeController.didMove(toParent: self)
@@ -104,6 +105,7 @@ class ContainerController: UIViewController {
     
     private func configureMenuController(withUser user: User) {
         menuController = MenuController(user: user)
+        guard let menuController = menuController else { return }
         menuController.delegate = self
         addChild(menuController)
         menuController.didMove(toParent: self)
@@ -169,7 +171,9 @@ class ContainerController: UIViewController {
     private func settings() {
         guard let user = user else { return }
         let settingsController = SettingsController(user: user)
+        settingsController.delegate = self
         let navigationController = UINavigationController(rootViewController: settingsController)
+        navigationController.modalPresentationStyle = .overFullScreen
         present(navigationController, animated: true)
     }
     
@@ -204,4 +208,13 @@ extension ContainerController: MenuControllerDelegate {
         }
     }
     
+}
+
+extension ContainerController: SettingsControllerDelegate {
+    
+    func updateUser(_ settingsController: SettingsController) {
+        self.user = settingsController.user
+    }
+    
+     
 }

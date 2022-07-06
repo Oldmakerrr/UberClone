@@ -43,6 +43,7 @@ class HomeController: UIViewController {
     private let locationManager = LocationHandler.shared.locationManager
     
     private var searchResults = [MKPlacemark]()
+    private var savedLocations = [MKPlacemark]()
     private var routes: MKRoute?
     
     weak var delegate: HomeControllerDelegate?
@@ -67,10 +68,15 @@ class HomeController: UIViewController {
     
     //MARK: Model
     
-    let user: User
+    var user: User? {
+        didSet {
+            checkAccountTypeUser()
+        }
+    }
     
     private var trip: Trip? {
         didSet {
+            guard let user = user else { return }
             switch user.accountType {
             case .passenger:
                 print("DEBUG: Your trip load..")
@@ -82,16 +88,6 @@ class HomeController: UIViewController {
     }
     
     //MARK: - Lifecycle
-    
-    init(user: User) {
-        self.user = user
-        super.init(nibName: nil, bundle: nil)
-        locationInputView.user = user
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -232,15 +228,17 @@ class HomeController: UIViewController {
     
     private func configure() {
         configureUI()
-        checkAccountTypeUser()
+        //checkAccountTypeUser()
     }
     
     private func checkAccountTypeUser() {
+        guard let user = user else { return }
         switch user.accountType {
         case .passenger:
             fetchDrivers()
             configureLocationInputActivationView()
             observeCurrentTrip()
+            configureSavedUserLocations()
         case .driver:
             observeTrips()
         }
@@ -258,7 +256,29 @@ class HomeController: UIViewController {
         configureRideActionView()
     }
     
+    func configureSavedUserLocations() {
+        guard let user = user else { return }
+        if let homeLoaction = user.homeLocation {
+            geocodeAddressString(address: homeLoaction)
+        }
+        
+        if let workLocation = user.workLocation {
+            geocodeAddressString(address: workLocation)
+            
+        }
+    }
     
+    func geocodeAddressString(address: String) {
+        savedLocations.removeAll()
+        let geocoder = CLGeocoder()
+        geocoder.geocodeAddressString(address) { placemarks, error in
+            guard let clPlacemark = placemarks?.first else { return }
+            let placemark = MKPlacemark(placemark: clPlacemark)
+            self.savedLocations.append(placemark)
+            self.tableView.reloadData()
+            print("DEBUG: \(placemarks)")
+        }
+    }
     
     //MARK: - Helper function Configure SubViews
     
@@ -548,28 +568,37 @@ extension HomeController: CLLocationManagerDelegate {
 extension HomeController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "test"
+        return section == 0 ? "Saved locations" : "Search Results"
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return savedLocations.isEmpty ? 1 : 2
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? 2 : searchResults.count
+        return section == 0 ? savedLocations.count : searchResults.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: LocationCell.identifier, for: indexPath) as! LocationCell
-        if indexPath.section == 1 {
-            let placemark = searchResults[indexPath.row]
-            cell.placemark = placemark
-        }
+        let placemark = indexPath.section == 0 ? savedLocations[indexPath.section] : searchResults[indexPath.row]
+//        if indexPath.section == 1 {
+//            let placemark = searchResults[indexPath.row]
+//            cell.placemark = placemark
+//        }
+        cell.placemark = placemark
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedPlacemark = searchResults[indexPath.row]
+        var selectedPlacemark: MKPlacemark
+        switch indexPath.section {
+        case 0:
+            selectedPlacemark = savedLocations[indexPath.row]
+        default:
+            selectedPlacemark = searchResults[indexPath.row]
+        }
+//        let selectedPlacemark = searchResults[indexPath.row]
         
         configureActionButton(config: actionButtonConfig)
         
@@ -593,7 +622,8 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
 extension HomeController: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, didUpdate userLocation: MKUserLocation) {
-        guard user.accountType == .driver,
+        guard let user = user,
+              user.accountType == .driver,
                 let location = userLocation.location else { return }
         //Upload new current location to fireBase
         DriverService.shared.updateDriverLocation(loaction: location)
