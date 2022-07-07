@@ -16,13 +16,22 @@ class PickupController: UIViewController {
     
     //MARK: - Properties
     
-    
-    
     weak var delegate: PickupControllerDelegate?
     
     private let mapView = MKMapView()
     
     var trip: Trip
+    
+    private lazy var circularProgressView: CircularProgressView = {
+        let frame = CGRect(x: 0, y: 0, width: 360, height: 360)
+        let circularProgressView = CircularProgressView(frame: frame)
+        circularProgressView.addSubview(mapView)
+        mapView.setDimensions(height: 268)
+        mapView.layer.cornerRadius = 268 / 2
+        mapView.centerX(inView: circularProgressView)
+        mapView.centerY(inView: circularProgressView, constant: 32)
+        return circularProgressView
+    }()
     
     private let cancelButton: UIButton = {
         let button = UIButton()
@@ -70,6 +79,7 @@ class PickupController: UIViewController {
         super.viewDidLoad()
         configureUI()
         configureMapView()
+        perform(#selector(animateProgress), with: nil, afterDelay: 0.5)
     }
     
     //MARK: - Helper Function
@@ -88,7 +98,7 @@ class PickupController: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backGroundColor
         setupCancelButton()
-        setupMapView()
+        setupCircularProgressView()
         setupPickupLabel()
         setupAcceptTripButton()
     }
@@ -99,18 +109,17 @@ class PickupController: UIViewController {
                             paddingTop: 16, paddingLeft: 16)
     }
     
-    private func setupMapView() {
-        view.addSubview(mapView)
-        mapView.setDimensions(height: 240)
-        mapView.layer.cornerRadius = 240 / 2
-        mapView.centerX(inView: view)
-        mapView.centerY(inView: view, constant: -80)
+    private func setupCircularProgressView() {
+        view.addSubview(circularProgressView)
+        circularProgressView.setDimensions(height: 360)
+        circularProgressView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32)
+        circularProgressView.centerX(inView: view)
     }
     
     private func setupPickupLabel() {
         view.addSubview(pickupLabel)
         pickupLabel.centerX(inView: view)
-        pickupLabel.anchor(top: mapView.bottomAnchor, paddingTop: 16)
+        pickupLabel.anchor(top: circularProgressView.bottomAnchor, paddingTop: 32)
     }
     
     private func setupAcceptTripButton() {
@@ -120,6 +129,13 @@ class PickupController: UIViewController {
     }
  
     //MARK: - Selectors
+    
+    @objc private func animateProgress() {
+        circularProgressView.animatePulsatingLayer()
+        circularProgressView.setProgressWithAnimation(duration: 6, value: 0) {
+            self.dismiss(animated: true)
+        }
+    }
     
     @objc private func handleDismissal() {
         dismiss(animated: true)

@@ -18,7 +18,7 @@ class CircularProgressView: UIView {
     
     //MARK: - Lyfecicle
     
-    override init(frame: CGRect) {
+    override init(frame: CGRect = .zero) {
         super.init(frame: frame)
         configureCircleLayers()
     }
@@ -30,19 +30,19 @@ class CircularProgressView: UIView {
     //MARK: - Helper Function
     
     private func configureCircleLayers() {
-        pulsatingLayer = circleSapeLayer(strockColor: .clear, fillColor: .blue)
+        pulsatingLayer = circleShapeLayer(strockColor: .clear, fillColor: .mainBlueTint)
         layer.addSublayer(pulsatingLayer)
         
-        trackLayer = circleSapeLayer(strockColor: .clear, fillColor: .clear)
+        trackLayer = circleShapeLayer(strockColor: .clear, fillColor: .clear)
         layer.addSublayer(trackLayer)
         trackLayer.strokeEnd = 1
         
-        progressLayer = circleSapeLayer(strockColor: .systemPink, fillColor: .clear)
+        progressLayer = circleShapeLayer(strockColor: .systemPink, fillColor: .clear)
         layer.addSublayer(progressLayer)
         progressLayer.strokeEnd = 1
     }
     
-    private func circleSapeLayer(strockColor: UIColor, fillColor: UIColor) -> CAShapeLayer {
+    private func circleShapeLayer(strockColor: UIColor, fillColor: UIColor) -> CAShapeLayer {
         let layer = CAShapeLayer()
         let center = CGPoint(x: 0, y: 32)
         let circularPath = UIBezierPath(arcCenter: center,
@@ -56,6 +56,34 @@ class CircularProgressView: UIView {
         layer.lineCap = .round
         layer.position = self.center
         return layer
+    }
+    
+    func animatePulsatingLayer() {
+        let animation = CABasicAnimation(keyPath: "transform.scale")
+        animation.toValue = 1.25
+        animation.duration = 0.8
+        animation.timingFunction = CAMediaTimingFunction(name: .easeOut)
+        animation.autoreverses = true
+        animation.repeatCount = Float.infinity
+        
+        pulsatingLayer.add(animation, forKey: "pulsing")
+    }
+    
+    func setProgressWithAnimation(duration: TimeInterval, value: Float,
+                                          completion: @escaping () -> Void) {
+        CATransaction.begin()
+        CATransaction.setCompletionBlock(completion)
+        
+        let animation = CABasicAnimation(keyPath: "strokeEnd")
+        animation.duration = duration
+        animation.fromValue = 1
+        animation.toValue = value
+    
+        animation.timingFunction = CAMediaTimingFunction(name: .linear)
+        progressLayer.strokeEnd = CGFloat(value)
+        progressLayer.add(animation, forKey: "animateProgress")
+        
+        CATransaction.commit()
     }
     
 }
