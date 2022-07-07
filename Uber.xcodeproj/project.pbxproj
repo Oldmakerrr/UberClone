@@ -14,6 +14,7 @@
 		1802865F286D763400B61C69 /* AddLocationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1802865E286D763400B61C69 /* AddLocationController.swift */; };
 		180C1B8B28528D590018D0DA /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180C1B8A28528D590018D0DA /* SignUpViewController.swift */; };
 		180C1B8D28545C7F0018D0DA /* AuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 180C1B8C28545C7F0018D0DA /* AuthButton.swift */; };
+		1812749F2876AD8200AE47B4 /* CircularProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1812749E2876AD8200AE47B4 /* CircularProgressView.swift */; };
 		186E00552839254F006E86E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186E00542839254F006E86E9 /* AppDelegate.swift */; };
 		186E00572839254F006E86E9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186E00562839254F006E86E9 /* SceneDelegate.swift */; };
 		186E005E28392555006E86E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 186E005D28392555006E86E9 /* Assets.xcassets */; };
@@ -45,6 +46,7 @@
 		1802865E286D763400B61C69 /* AddLocationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLocationController.swift; sourceTree = "<group>"; };
 		180C1B8A28528D590018D0DA /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		180C1B8C28545C7F0018D0DA /* AuthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthButton.swift; sourceTree = "<group>"; };
+		1812749E2876AD8200AE47B4 /* CircularProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressView.swift; sourceTree = "<group>"; };
 		186E00512839254F006E86E9 /* Uber.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Uber.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		186E00542839254F006E86E9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		186E00562839254F006E86E9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 			children = (
 				187A774C28635FEA00DEF391 /* RideActionView.swift */,
 				180C1B8C28545C7F0018D0DA /* AuthButton.swift */,
+				1812749E2876AD8200AE47B4 /* CircularProgressView.swift */,
 				187EC8132857409E00C65FA7 /* LocationCell.swift */,
 				18C975652856493B001A6848 /* LocationInputView.swift */,
 				18C97563285626C5001A6848 /* LocationInputActivationView.swift */,
@@ -339,6 +342,7 @@
 				186E00712839269D006E86E9 /* LoginController.swift in Sources */,
 				187EC8142857409E00C65FA7 /* LocationCell.swift in Sources */,
 				18028654286C24DC00B61C69 /* MenuController.swift in Sources */,
+				1812749F2876AD8200AE47B4 /* CircularProgressView.swift in Sources */,
 				187EC81A2857B73A00C65FA7 /* LocationHandler.swift in Sources */,
 				18028656286C24F800B61C69 /* ContainerController.swift in Sources */,
 				18028658286C377200B61C69 /* MenuHeader.swift in Sources */,

@@ -591,15 +591,7 @@ extension HomeController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        var selectedPlacemark: MKPlacemark
-        switch indexPath.section {
-        case 0:
-            selectedPlacemark = savedLocations[indexPath.row]
-        default:
-            selectedPlacemark = searchResults[indexPath.row]
-        }
-//        let selectedPlacemark = searchResults[indexPath.row]
-        
+        let selectedPlacemark = indexPath.section == 0 ? savedLocations[indexPath.row] : searchResults[indexPath.row]
         configureActionButton(config: actionButtonConfig)
         
         //add Poly line to mapView

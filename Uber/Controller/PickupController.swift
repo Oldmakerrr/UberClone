@@ -16,6 +16,8 @@ class PickupController: UIViewController {
     
     //MARK: - Properties
     
+    
+    
     weak var delegate: PickupControllerDelegate?
     
     private let mapView = MKMapView()
