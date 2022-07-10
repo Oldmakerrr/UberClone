@@ -79,7 +79,7 @@ class PickupController: UIViewController {
         super.viewDidLoad()
         configureUI()
         configureMapView()
-        perform(#selector(animateProgress), with: nil, afterDelay: 0.5)
+        self.perform(#selector(animateProgress), with: nil, afterDelay: 0.5)
     }
     
     //MARK: - Helper Function
@@ -132,8 +132,12 @@ class PickupController: UIViewController {
     
     @objc private func animateProgress() {
         circularProgressView.animatePulsatingLayer()
-        circularProgressView.setProgressWithAnimation(duration: 6, value: 0) {
-            self.dismiss(animated: true)
+        circularProgressView.setProgressWithAnimation(duration: 5, value: 0) {
+            self.dismiss(animated: true) {
+                DriverService.shared.updateTripState(trip: self.trip, state: .denied) { error, reference in
+                    print("DEBUG: Driver denide trip...")
+                }
+            }
         }
     }
     

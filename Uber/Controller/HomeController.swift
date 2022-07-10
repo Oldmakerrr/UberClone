@@ -70,7 +70,17 @@ class HomeController: UIViewController {
     
     var user: User? {
         didSet {
-            checkAccountTypeUser()
+            locationInputView.user = user
+            guard let accountType = user?.accountType else { return }
+            switch accountType {
+            case .passenger:
+                fetchDrivers()
+                configureLocationInputActivationView()
+                observeCurrentTrip()
+                configureSavedUserLocations()
+            case .driver:
+                observeTrips()
+            }
         }
     }
     
@@ -136,9 +146,23 @@ class HomeController: UIViewController {
         PassengerService.shared.observeCurrentTrip { trip in
             self.trip = trip
             guard let driverUid = trip.drivarUid else { return }
+            
             switch trip.state {
             case .requested:
                 break
+            case .denied:
+                print("DEBUG: trip denied")
+                self.shouldPresentLoadingView(false)
+                self.presentAlertControlle(withTitle: "Oops",
+                                           withMessage: "It looks like we couldn't find your a driver. Please try again..")
+                PassengerService.shared.deleteTrip { error, reference in
+                    self.configureActionButton(config: .showMenu)
+                    self.removeAnnotationsAndOverlays()
+                    self.centerMapOnuserLocation()
+                    UIView.animate(withDuration: 0.3) {
+                        self.locationInputActivationView.alpha = 1
+                    }
+                }
             case .accepted:
                 self.shouldPresentLoadingView(false)
                 self.removeAnnotationsAndOverlays()
@@ -157,6 +181,7 @@ class HomeController: UIViewController {
                     if let error = error {
                         print("DEBUG: Failed to delete trip with error: \(error.localizedDescription)")
                     }
+                    self.rideActionView.config = .requestRide
                     self.animateRideActionView(shouldShow: false)
                     self.centerMapOnuserLocation()
                     self.configureActionButton(config: .dismissActionView)
@@ -231,18 +256,7 @@ class HomeController: UIViewController {
         //checkAccountTypeUser()
     }
     
-    private func checkAccountTypeUser() {
-        guard let user = user else { return }
-        switch user.accountType {
-        case .passenger:
-            fetchDrivers()
-            configureLocationInputActivationView()
-            observeCurrentTrip()
-            configureSavedUserLocations()
-        case .driver:
-            observeTrips()
-        }
-    }
+    
     
     private func configureUI() {
         configureMapView()
