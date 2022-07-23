@@ -58,9 +58,7 @@ class ContainerController: UIViewController {
     
     func fetchCurrentUserData() {
         guard let uid = Auth.auth().currentUser?.uid else {
-            DispatchQueue.main.async {
-                self.goToLoginController()
-            }
+            goToLoginController()
             return
         }
         Service.shared.fetchUserData(uid: uid) { user in
@@ -74,9 +72,7 @@ class ContainerController: UIViewController {
     private func signOut() {
         do {
             try Auth.auth().signOut()
-            DispatchQueue.main.async {
-                self.goToLoginController()
-            }
+            goToLoginController()
             print("DEBUG: Succesfully sign out")
         } catch let error {
             print("DEBUG: Erorr signing out \(error.localizedDescription)")
@@ -86,10 +82,12 @@ class ContainerController: UIViewController {
     //MARK: - Navigation function
     
     private func goToLoginController() {
-        let loginController = LoginController()
-        let navigationController = UINavigationController(rootViewController: loginController)
-        navigationController.modalPresentationStyle = .overFullScreen
-        present(navigationController, animated: true)
+        DispatchQueue.main.async {
+            let loginController = LoginController()
+            let navigationController = UINavigationController(rootViewController: loginController)
+            navigationController.modalPresentationStyle = .overFullScreen
+            self.present(navigationController, animated: true)
+        }
     }
     
     //MARK: - Helper Functions

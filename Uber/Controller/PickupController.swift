@@ -20,6 +20,8 @@ class PickupController: UIViewController {
     
     private let mapView = MKMapView()
     
+    var tripAccepted = false
+    
     var trip: Trip
     
     private lazy var circularProgressView: CircularProgressView = {
@@ -134,8 +136,10 @@ class PickupController: UIViewController {
         circularProgressView.animatePulsatingLayer()
         circularProgressView.setProgressWithAnimation(duration: 5, value: 0) {
             self.dismiss(animated: true) {
-                DriverService.shared.updateTripState(trip: self.trip, state: .denied) { error, reference in
-                    print("DEBUG: Driver denide trip...")
+                if !self.tripAccepted {
+                    DriverService.shared.updateTripState(trip: self.trip, state: .denied) { error, reference in
+                        print("DEBUG: Driver denide trip...")
+                    }
                 }
             }
         }
@@ -147,6 +151,7 @@ class PickupController: UIViewController {
     
     @objc private func handleAcceptTrip() {
         DriverService.shared.acceptTrip(trip: trip) { error, reference in
+            self.tripAccepted = true
             self.delegate?.didAcceptTrip(self) 
         }
     }

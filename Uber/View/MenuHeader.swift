@@ -18,16 +18,24 @@ class MenuHeader: UIView {
     
    private let user: User
     
-    private let profileImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.backgroundColor = .lightGray
-        return imageView
+    private lazy var profileImageView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        view.addSubview(initialLabel)
+        initialLabel.centerX(inView: view)
+        initialLabel.centerY(inView: view)
+        return view
+    }()
+    
+    private let initialLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 42)
+        return label
     }()
     
     private let fullNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
-        
         return label
     }()
     
@@ -45,14 +53,17 @@ class MenuHeader: UIView {
         super.init(frame: frame)
         fullNameLabel.text = user.fullname
         emailLabel.text = user.email
+        initialLabel.text = user.firstInitial
         setupView()
         switch style {
         case .white:
             backgroundColor = .white
             fullNameLabel.textColor = .black
+            initialLabel.textColor = .white
         case .black:
             backgroundColor = .backGroundColor
             fullNameLabel.textColor = .white
+            initialLabel.textColor = .white
         }
     }
     

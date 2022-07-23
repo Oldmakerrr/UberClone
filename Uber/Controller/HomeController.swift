@@ -145,7 +145,6 @@ class HomeController: UIViewController {
     private func observeCurrentTrip() {
         PassengerService.shared.observeCurrentTrip { trip in
             self.trip = trip
-            guard let driverUid = trip.drivarUid else { return }
             
             switch trip.state {
             case .requested:
@@ -156,7 +155,7 @@ class HomeController: UIViewController {
                 self.presentAlertControlle(withTitle: "Oops",
                                            withMessage: "It looks like we couldn't find your a driver. Please try again..")
                 PassengerService.shared.deleteTrip { error, reference in
-                    self.configureActionButton(config: .showMenu)
+                    self.configureActionButton(config: .dismissActionView)
                     self.removeAnnotationsAndOverlays()
                     self.centerMapOnuserLocation()
                     UIView.animate(withDuration: 0.3) {
@@ -166,9 +165,11 @@ class HomeController: UIViewController {
             case .accepted:
                 self.shouldPresentLoadingView(false)
                 self.removeAnnotationsAndOverlays()
-                self.zoomForActiveTrip(withDriverUid: driverUid)
-                Service.shared.fetchUserData(uid: driverUid) { driver in
-                    self.animateRideActionView(shouldShow: true, user: driver, withConfig: .tripAccepted)
+                if let driverUid = trip.drivarUid {
+                    self.zoomForActiveTrip(withDriverUid: driverUid)
+                    Service.shared.fetchUserData(uid: driverUid) { driver in
+                        self.animateRideActionView(shouldShow: true, user: driver, withConfig: .tripAccepted)
+                    }
                 }
             case .driverArrived:
                 self.rideActionView.config = .driverArrived
