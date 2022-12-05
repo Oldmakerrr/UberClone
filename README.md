@@ -11,4 +11,3 @@
   <img src="https://user-images.githubusercontent.com/92182846/205712872-40da3d2d-cde8-4801-89fc-77f7a59df453.png" width=30% height=30%>
 </p>
 
-<img src="" width=30% height=30%>
